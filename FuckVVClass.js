@@ -7133,7 +7133,7 @@
                                         }, u.default.createElement("td", /*修改过的代码：这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得助教可下台。--->*/ {
                                             className: "changeRole",
                                             onDoubleClick: function () {
-                                                return variable.handleMoveMemberToStudent(r)
+                                                return variable.handleMoveMemberToStudent(e)
                                             }
                                         }/*<---这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得助教可下台。*/, u.default.createElement("img", {
                                             src: "./resources/images/member_teacher.svg"
