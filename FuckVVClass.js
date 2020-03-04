@@ -1,5 +1,5 @@
 /*
- * shinevv-vvclass-app v1.4.14
+ * shinevv-vvclass-app v1.4.15
  * shinevv vvclass app
  * Copyright: 2017-2020 vvclass <huojianwei@shinevv.com>
  * License: All Rights Reserved
@@ -1346,42 +1346,51 @@
                             return /(back|rear)/i.test(e.label) ? (T.debug("_getWebcamType() | it seems to be a back camera"), "back") : (T.debug("_getWebcamType() | it seems to be a front camera"), "front")
                         }
                     }, {
+                        key: "_addPeerVideoView",
+                        value: function (e) {
+                            var r = e.peerName,
+                                a = e.role,
+                                n = e.displayName;
+                            r !== this._peerName && ("student" !== a && "tutor" !== a && "teacher" !== a || this._dispatch(g.addPeer({
+                                role: a,
+                                name: r,
+                                displayName: n,
+                                device: {},
+                                consumers: []
+                            })))
+                        }
+                    }, {
+                        key: "_removePeerVideoView",
+                        value: function (e) {
+                            this._dispatch(g.removePeer(e))
+                        }
+                    }, {
                         key: "_handlePeer",
                         value: function (e) {
                             var r = this,
-                                a = ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).notify, e.appData.displayName),
-                                t = e.appData.role;
-                            "student" !== t && "tutor" !== t && "teacher" !== t || this._dispatch(g.addPeer({
-                                role: t,
-                                name: e.name,
-                                displayName: a,
-                                device: e.appData.device,
-                                consumers: []
-                            }));
-                            var o = !0,
-                                i = !1,
-                                l = void 0;
+                                a = ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).notify, e.appData.displayName, e.appData.role, !0),
+                                t = !1,
+                                o = void 0;
                             try {
-                                for (var s, u = (0, n.default)(e.consumers); !(o = (s = u.next()).done); o = !0) {
-                                    var c = s.value;
-                                    this._handleConsumer(c)
+                                for (var i, l = (0, n.default)(e.consumers); !(a = (i = l.next()).done); a = !0) {
+                                    var s = i.value;
+                                    this._handleConsumer(s)
                                 }
                             } catch (e) {
-                                i = !0,
-                                    l = e
+                                t = !0,
+                                    o = e
                             }
                             finally {
                                 try {
-                                    !o && u.return && u.return()
+                                    !a && l.return && l.return()
                                 }
                                 finally {
-                                    if (i)
-                                        throw l
+                                    if (t)
+                                        throw o
                                 }
                             }
-                            e.on("close", function (a) {
-                                T.debug('peer "close" event [name:"%s", originator:%s]', e.name, a),
-                                    r._dispatch(g.removePeer(e.name))
+                            e.on("close", function (r) {
+                                T.debug('peer "close" event [name:"%s", originator:%s]', e.name, r)
                             }),
                                 e.on("newconsumer", function (a) {
                                     T.debug('peer "newconsumer" event [name:"%s", id:%s, consumer:%o]', e.name, a.id, a),
@@ -1864,7 +1873,8 @@
                                             ee = $.displayName,
                                             re = $.role;
                                         T.debug("new-protoo-peer, peerName %s, displayName %s, role %s", X, ee, re),
-                                            e._dispatch(g.addMember(r.data));
+                                            e._dispatch(g.addMember(r.data)),
+                                            e._addPeerVideoView(r.data);
                                         break;
                                     case "remove-protoo-peer":
                                         a();
@@ -1873,14 +1883,15 @@
                                             te = ae.displayName,
                                             oe = ae.role;
                                         T.debug("remove-protoo-peer, peerName %s, displayName %s, role %s", ne, te, oe),
-                                            e._dispatch(g.removeMember(ne));
+                                            e._dispatch(g.removeMember(ne)),
+                                            e._removePeerVideoView(ne);
                                         break;
                                     case "protoo-peers":
                                         a();
                                         var ie = r.data;
                                         T.debug("protoo-peers %o", ie),
                                             ie.map(function (r) {
-                                                r.peerName === e._peerName && r.role !== e._peerRole && e.updateMineRole(r.role)
+                                                r.peerName === e._peerName && r.role !== e._peerRole ? e.updateMineRole(r.role) : e._addPeerVideoView(r)
                                             }),
                                             e._dispatch(g.addMembers(ie));
                                         break;
@@ -1985,17 +1996,12 @@
                                             T.debug("member-role-changed");
                                         var we = r.data,
                                             Ce = we.peerName,
-                                            Be = we.role,
-                                            _e = we.displayName;
+                                            Be = we.role;
+                                        we.displayName;
                                         e._peerName === Ce ? e.updateMineRole(Be) : (e._dispatch(g.memberRoleChanged({
                                             peerName: Ce,
                                             role: Be
-                                        })), "student" === Be ? e._dispatch(g.addPeer({
-                                            role: Be,
-                                            name: Ce,
-                                            displayName: _e,
-                                            consumers: []
-                                        })) : e._dispatch(g.removePeer(Ce)));
+                                        })), "student" === Be ? e._addPeerVideoView(r.data) : e._removePeerVideoView(Ce));
                                         break;
                                     default:
                                         T.error('unknown protoo method "%s"', r.method),
@@ -7139,7 +7145,7 @@
                                         }, u.default.createElement("td", /*修改过的代码：这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得助教可下台。--->*/ {
                                             className: "changeRole",
                                             onDoubleClick: function () {
-                                                return variable.handleMoveMemberToStudent(e)
+                                                return that.handleMoveMemberToStudent(e)
                                             }
                                         }/*<---这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得助教可下台。*/, u.default.createElement("img", {
                                             src: "./resources/images/member_teacher.svg"
@@ -7222,14 +7228,17 @@
                                     var msg = "使老师或助教下台是十分危险的操作，您确定要继续？";
                                     if (confirm(msg) == true) {
                                         this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
+                                        g.debug("handleMoveMemberToVisitor")
                                         location.reload(true)
                                     }
                                 }
                                 else if (e.role == "student") {
                                     this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
+                                    g.debug("handleMoveMemberToVisitor")
                                 }
                                 else if (e.role == "visitor") {
                                     this.props.changeMemberRole(e.peerName, e.displayName, "student")
+                                    g.debug("handleMoveMemberToStudent")
                                 }
                                 //"student" == e.role ? this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToVisitor"), this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : g.debug("handleMoveMemberToVisitor but has no permission") : "visitor" == e.role && (this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToStudent"), this.props.changeMemberRole(e.peerName, e.displayName, "student")) : g.debug("handleMoveMemberToStudent but has no permission"))
                             }
@@ -7238,6 +7247,7 @@
                             value: function (e) {
                                 //修改过的代码。
                                 this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
+                                g.debug("handleMoveMemberToVisitor")
                                 //this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToVisitor"), this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : g.debug("handleMoveMemberToVisitor but has no permission")
                             }
                         }, {
@@ -62123,7 +62133,7 @@
         820: [function (e, r, a) {
             r.exports = {
                 name: "shinevv-vvclass-app",
-                version: "1.4.14",
+                version: "1.4.15",
                 private: !0,
                 description: "shinevv vvclass app",
                 author: "vvclass <huojianwei@shinevv.com>",
@@ -62146,6 +62156,7 @@
                     "mediasoup-client": "2.4.10",
                     moment: "^2.24.0",
                     "node-random-name": "^1.0.1",
+                    "promise-request-retry": "^1.0.2",
                     "prop-types": "^15.6.0",
                     "protoo-client": "2.0.5",
                     raf: "^3.4.0",
