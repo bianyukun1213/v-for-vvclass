@@ -1351,7 +1351,7 @@
                             var r = this,
                                 a = ((arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}).notify, e.appData.displayName),
                                 t = e.appData.role;
-                            this._dispatch(g.addPeer({
+                            "student" !== t && "tutor" !== t && "teacher" !== t || this._dispatch(g.addPeer({
                                 role: t,
                                 name: e.name,
                                 displayName: a,
@@ -1985,11 +1985,17 @@
                                             T.debug("member-role-changed");
                                         var we = r.data,
                                             Ce = we.peerName,
-                                            Be = we.role;
-                                        e._peerName === Ce ? e.updateMineRole(Be) : e._dispatch(g.memberRoleChanged({
+                                            Be = we.role,
+                                            _e = we.displayName;
+                                        e._peerName === Ce ? e.updateMineRole(Be) : (e._dispatch(g.memberRoleChanged({
                                             peerName: Ce,
                                             role: Be
-                                        }));
+                                        })), "student" === Be ? e._dispatch(g.addPeer({
+                                            role: Be,
+                                            name: Ce,
+                                            displayName: _e,
+                                            consumers: []
+                                        })) : e._dispatch(g.removePeer(Ce)));
                                         break;
                                     default:
                                         T.error('unknown protoo method "%s"', r.method),
@@ -7087,7 +7093,7 @@
                         (0, i.default)(r, [{
                             key: "render",
                             value: function () {
-                                var variable = this//这里声明一个变量，方便后面拽老师、助教下台。
+                                var that = this//修改过的代码：这里声明一个变量，方便后面拽老师、助教下台。
                                 var e = this,
                                     r = {
                                         maxHeight: this.state.mainHeight + "px"
@@ -7114,19 +7120,19 @@
                                         }, u.default.createElement("td", /*修改过的代码：这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得老师可下台。--->*/ {
                                             className: "changeRole",
                                             onDoubleClick: function () {
-                                                return variable.handleMoveMemberToStudent(r)
+                                                return that.handleMoveMemberToStudent(r)
                                             }
                                         }/*<---这里本来是 null，我给复制了学生那里的代码并修改了变量名，使得老师可下台。*/, u.default.createElement("div", {
                                             className: (0, d.default)(r.role)
                                         })), u.default.createElement("td", {
                                             className: "characterName",
                                             colSpan: "3"
-                                        }, u.default.createElement("span", null, r.displayName)), "admin" === e.props.me.role ? u.default.createElement("td", null, u.default.createElement("span", {
+                                        }, u.default.createElement("span", null, r.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：所有人可踢老师。
                                             className: "kick_off",
                                             onClick: function (a) {
                                                 return e.handleKickMemberOffteacher(a, r)
                                             }
-                                        })) : null)
+                                        }))/* : null*/)
                                     })), u.default.createElement("tbody", null, this.props.tutorMembers.map(function (e, r) {
                                         return u.default.createElement("tr", {
                                             key: r
@@ -7192,7 +7198,10 @@
                         }, {
                             key: "handleKickMemberOffteacher",
                             value: function (e, r) {
-                                "admin" === this.props.me.role && (e.stopPropagation(), this.props.kickMemberOff(r.peerName, r.displayName))
+                                //修改过的代码：所有人可踢老师。
+                                e.stopPropagation(),
+                                    this.props.kickMemberOff(r.peerName, r.displayName)
+                                //"admin" === this.props.me.role && (e.stopPropagation(), this.props.kickMemberOff(r.peerName, r.displayName))
                             }
                         }, {
                             key: "handleKickMemberOff",
@@ -7203,7 +7212,7 @@
                         }, {
                             key: "handleMoveMemberToStudent",
                             value: function (e) {
-                                //修改过的代码
+                                //修改过的代码。
                                 if (e.role == "teacher" || e.role == "tutor") {
                                     var msg = "使老师或助教下台是十分危险的操作，您确定要继续？";
                                     if (confirm(msg) == true) {
@@ -7222,7 +7231,7 @@
                         }, {
                             key: "handleMoveMemberToVisitor",
                             value: function (e) {
-                                //修改过的代码
+                                //修改过的代码。
                                 this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
                                 //this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToVisitor"), this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : g.debug("handleMoveMemberToVisitor but has no permission")
                             }
@@ -61620,7 +61629,7 @@
         ],
         817: [function (e, r, a) {
             r.exports = {
-                _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vvclass/temp/vvclass/app"]],
+                _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vroom/app"]],
                 _from: "websocket@1.0.31",
                 _id: "websocket@1.0.31",
                 _inBundle: !1,
@@ -61641,7 +61650,7 @@
                 _requiredBy: ["/protoo-client"],
                 _resolved: "https://registry.npmjs.org/websocket/-/websocket-1.0.31.tgz",
                 _spec: "1.0.31",
-                _where: "/Users/Liuzq/project/node/vvclass/temp/vvclass/app",
+                _where: "/Users/Liuzq/project/node/vroom/app",
                 author: {
                     name: "Brian McKelvey",
                     email: "theturtle32@gmail.com",
