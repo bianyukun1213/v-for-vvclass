@@ -7093,7 +7093,7 @@
                         (0, i.default)(r, [{
                             key: "render",
                             value: function () {
-                                var that = this//修改过的代码：这里声明一个变量，方便后面拽老师、助教下台。
+                                var that = this//修改过的代码：这里声明一个变量，方便后面拽老师、助教下台，避免代码混淆的影响。
                                 var e = this,
                                     r = {
                                         maxHeight: this.state.mainHeight + "px"
@@ -7127,7 +7127,7 @@
                                         })), u.default.createElement("td", {
                                             className: "characterName",
                                             colSpan: "3"
-                                        }, u.default.createElement("span", null, r.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：所有人可踢老师。
+                                        }, u.default.createElement("span", null, r.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：任何身份都可踢老师。
                                             className: "kick_off",
                                             onClick: function (a) {
                                                 return e.handleKickMemberOffteacher(a, r)
@@ -7146,7 +7146,12 @@
                                         })), u.default.createElement("td", {
                                             className: "characterName",
                                             colSpan: "3"
-                                        }, u.default.createElement("span", null, e.displayName)))
+                                        }, u.default.createElement("span", null, e.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：移植自教师，使任何身份都可踢助教。
+                                            className: "kick_off",
+                                            onClick: function (r) {
+                                                return that.handleKickMemberOffteacher(r, e)//使用了 that 避免代码混淆的影响，同时更改了参数。
+                                            }
+                                        }))/* : null*/)
                                     })), u.default.createElement("tbody", null, "student" == this.props.me.role || "visitor" == this.props.me.role ? u.default.createElement("tr", null, u.default.createElement("td", null, u.default.createElement("div", {
                                         className: (0, d.default)(this.props.me.role)
                                     })), u.default.createElement("td", {
