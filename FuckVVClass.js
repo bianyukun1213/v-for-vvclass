@@ -5,7 +5,26 @@
  * License: All Rights Reserved
  */
 
+function stopDisguising() {//修改过的代码：退出掉线伪装状态。
+    sessionStorage.setItem(sessionStorage.getItem("roleKey"), sessionStorage.getItem("previousRole"));
+    sessionStorage.setItem("fakeDisconnection", false);
+    if (window.Notification && Notification.permission !== "denied") {
+        Notification.requestPermission(function (status) {
+            var n = new Notification("掉线伪装已停用", { body: "已退出掉线伪装状态。" });
+        });
+    }
+    location.reload(true);
+}
 !function () {
+    var fake = sessionStorage.getItem("fakeDisconnection");
+    if (fake == "true") {//修改过的代码：10 秒后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
+        if (window.Notification && Notification.permission !== "denied") {
+            Notification.requestPermission(function (status) {
+                var n = new Notification("掉线伪装已启用", { body: "检测到身份变更，已启用掉线伪装。\n10 秒钟后会退出掉线伪装状态并刷新页面。" });
+            });
+        }
+        setTimeout("stopDisguising()", 10000);
+    }
     return function e(r, a, n) {
         function t(i, l) {
             if (!a[i]) {
@@ -932,7 +951,6 @@
                                             text: "不能加入这个房间: " + e.toString()
                                         })),
                                         r.close()
-
                                 })
                         }
                     }, {
@@ -2030,7 +2048,7 @@
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(D.sessionStorage.role, e)
-                                (e == "student" ? (location.reload(true)) : sessionStorage.setItem(D.sessionStorage.role, e)),//修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
+                                (e == "student" ? (sessionStorage.setItem("roleKey", D.sessionStorage.role), sessionStorage.setItem("previousRole", sessionStorage.getItem(D.sessionStorage.role)), sessionStorage.setItem(D.sessionStorage.role, "admin"), sessionStorage.setItem("fakeDisconnection", true), location.reload(true)) : sessionStorage.setItem(D.sessionStorage.role, e)),//修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
