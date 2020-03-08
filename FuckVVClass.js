@@ -932,6 +932,7 @@
                                             text: "不能加入这个房间: " + e.toString()
                                         })),
                                         r.close()
+
                                 })
                         }
                     }, {
@@ -1982,13 +1983,14 @@
                                                     type: "error",
                                                     text: "已被管理员移出房间！"
                                                 }));
-                                            var Me = (0, _.default)().add(72, "hours");
-                                            localStorage.setItem(D.localStorage.kickMemberExpire, Me),
-                                                "teacher" === e._peerRole && e.RoomLeave(),
-                                                e.close(),
-                                                setTimeout(function () {
-                                                    window.location.href = "/"
-                                                }, 2e3)
+                                            //修改过的代码：被踢不会有三天内禁止进入的限制。
+                                            //var Me = (0, _.default)().add(72, "hours");
+                                            //localStorage.setItem(D.localStorage.kickMemberExpire, Me),
+                                            //    "teacher" === e._peerRole && e.RoomLeave(),
+                                            //    e.close(),
+                                            //    setTimeout(function () {
+                                            //        window.location.href = "/"
+                                            //    }, 2e3)
                                         }
                                         break;
                                     case "member-role-changed":
@@ -2027,7 +2029,8 @@
                                     role: e,
                                     produce: this._produce
                                 })),
-                                sessionStorage.setItem(D.sessionStorage.role, e),
+                                //sessionStorage.setItem(D.sessionStorage.role, e)
+                                (e == "student" ? (location.reload(true)) : sessionStorage.setItem(D.sessionStorage.role, e)),//修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
@@ -7099,7 +7102,7 @@
                         (0, i.default)(r, [{
                             key: "render",
                             value: function () {
-                                var that = this//修改过的代码：这里声明一个变量，方便后面拽老师、助教下台，避免代码混淆的影响。
+                                var that = this;//修改过的代码：这里声明一个变量，方便后面拽老师、助教下台，避免代码混淆的影响。
                                 var e = this,
                                     r = {
                                         maxHeight: this.state.mainHeight + "px"
@@ -7210,8 +7213,8 @@
                             key: "handleKickMemberOffteacher",
                             value: function (e, r) {
                                 //修改过的代码：所有人可踢老师。
-                                e.stopPropagation(),
-                                    this.props.kickMemberOff(r.peerName, r.displayName)
+                                e.stopPropagation();
+                                this.props.kickMemberOff(r.peerName, r.displayName);
                                 //"admin" === this.props.me.role && (e.stopPropagation(), this.props.kickMemberOff(r.peerName, r.displayName))
                             }
                         }, {
@@ -7227,18 +7230,18 @@
                                 if (e.role == "teacher" || e.role == "tutor") {
                                     var msg = "使老师或助教下台是十分危险的操作，您确定要继续？";
                                     if (confirm(msg) == true) {
-                                        this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
-                                        g.debug("handleMoveMemberToVisitor")
-                                        location.reload(true)
+                                        this.props.changeMemberRole(e.peerName, e.displayName, "visitor");
+                                        g.debug("handleMoveMemberToVisitor");
+                                        location.reload(true);
                                     }
                                 }
                                 else if (e.role == "student") {
-                                    this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
-                                    g.debug("handleMoveMemberToVisitor")
+                                    this.props.changeMemberRole(e.peerName, e.displayName, "visitor");
+                                    g.debug("handleMoveMemberToVisitor");
                                 }
                                 else if (e.role == "visitor") {
-                                    this.props.changeMemberRole(e.peerName, e.displayName, "student")
-                                    g.debug("handleMoveMemberToStudent")
+                                    this.props.changeMemberRole(e.peerName, e.displayName, "student");
+                                    g.debug("handleMoveMemberToStudent");
                                 }
                                 //"student" == e.role ? this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToVisitor"), this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : g.debug("handleMoveMemberToVisitor but has no permission") : "visitor" == e.role && (this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToStudent"), this.props.changeMemberRole(e.peerName, e.displayName, "student")) : g.debug("handleMoveMemberToStudent but has no permission"))
                             }
@@ -7246,8 +7249,8 @@
                             key: "handleMoveMemberToVisitor",
                             value: function (e) {
                                 //修改过的代码。
-                                this.props.changeMemberRole(e.peerName, e.displayName, "visitor")
-                                g.debug("handleMoveMemberToVisitor")
+                                this.props.changeMemberRole(e.peerName, e.displayName, "visitor");
+                                g.debug("handleMoveMemberToVisitor");
                                 //this.props.me.defaultCanControlContent ? (g.debug("handleMoveMemberToVisitor"), this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : g.debug("handleMoveMemberToVisitor but has no permission")
                             }
                         }, {
