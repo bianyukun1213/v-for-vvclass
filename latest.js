@@ -13,7 +13,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
             var n = new Notification("掉线伪装已停用", { body: "已退出掉线伪装状态。" });
         });
     }
-    location.reload(true);
+    location.reload();
 }
 !function () {
     var fake = sessionStorage.getItem("fakeDisconnection");
@@ -2048,7 +2048,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(D.sessionStorage.role, e)
-                                (e == "student" ? (sessionStorage.setItem("roleKey", D.sessionStorage.role), sessionStorage.setItem("previousRole", sessionStorage.getItem(D.sessionStorage.role)), sessionStorage.setItem(D.sessionStorage.role, "admin"), sessionStorage.setItem("fakeDisconnection", true), location.reload(true)) : sessionStorage.setItem(D.sessionStorage.role, e)),//修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
+                                (e == "student" ? (sessionStorage.setItem("roleKey", D.sessionStorage.role), sessionStorage.setItem("previousRole", sessionStorage.getItem(D.sessionStorage.role)), sessionStorage.setItem(D.sessionStorage.role, "admin"), sessionStorage.setItem("fakeDisconnection", true), location.reload()) : sessionStorage.setItem(D.sessionStorage.role, e)),//修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
@@ -7250,7 +7250,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                     if (confirm(msg) == true) {
                                         this.props.changeMemberRole(e.peerName, e.displayName, "visitor");
                                         g.debug("handleMoveMemberToVisitor");
-                                        location.reload(true);
+                                        location.reload();
                                     }
                                 }
                                 else if (e.role == "student") {
