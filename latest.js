@@ -1,4 +1,4 @@
-﻿/*
+/*
  * shinevv-vvclass-app v1.4.16
  * shinevv vvclass app
  * Copyright: 2017-2020 vvclass <huojianwei@shinevv.com>
@@ -23,7 +23,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                 var n = new Notification("掉线伪装已启用", { body: "检测到身份变更，已启用掉线伪装。\n10 秒钟后会退出掉线伪装状态并刷新页面。" });
             });
         }
-        setTimeout("stopDisguising()", 10000);
+        setTimeout("stopDisguising()", 30000);
     }
     return function e(a, r, n) {
         function t(i, l) {
@@ -7433,7 +7433,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                         }, u.default.createElement("span", null, a.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：任何身份都可踢老师。
                                             className: "kick_off",
                                             onClick: function (r) {
-                                                return that.handleKickMemberOffteacher(r, a)
+                                                return e.handleKickMemberOffteacher(r, a)
                                             }
                                         }))/* : null*/)
                                     })), u.default.createElement("tbody", null, this.props.tutorMembers.map(function (e, a) {
@@ -8444,7 +8444,8 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             key: "render",
                             value: function () {
                                 var e = this
-                                    , a = this.props.courseStarted;
+                                    , a = this.props.courseStarted
+                                    , r = sessionStorage.getItem(y.default.sessionStorage.serverRecord);
                                 return u.default.createElement("div", {
                                     "data-component": "Nav",
                                     className: this.state.maxOrMinClass,
@@ -8462,7 +8463,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                     onClick: this.handleMinOrMaxCanvas.bind(this)
                                 }, u.default.createElement("span", {
                                     className: "icon_list"
-                                })), 0 === localStorage.getItem(y.default.localStorage.serverRecord) ? null : this.props.leftNavDisplay ? u.default.createElement("div", {
+                                })), 0 == r ? null : this.props.leftNavDisplay ? u.default.createElement("div", {
                                     className: "tabname"
                                 }, u.default.createElement("a", {
                                     className: this.state.showtab ? "active" : "",
@@ -8597,7 +8598,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                         })
                                     });
                                 var s = m.hashHistory.getCurrentLocation().pathname;
-                                null !== t.url && t.url !== s && m.hashHistory.push(t.url)
+                                1 == this.props.courseStarted ? null !== t.url && t.url !== s && m.hashHistory.push(t.url) : 1 == this.state.showtab && null !== t.url && t.url !== s && m.hashHistory.push(t.url)
                             }
                         }, {
                             key: "handleClick",
@@ -8610,12 +8611,16 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "handleClickvideo",
                             value: function (e, a, r) {
-                                var t = this.props;
-                                t.sendRoute,
-                                    t.isTeacher;
-                                console.log(a),
-                                    localStorage.setItem("video", (0,
-                                        n.default)(a))
+                                var t = this.props
+                                    , o = t.sendRoute;
+                                t.isTeacher;
+                                if (localStorage.setItem("video", (0,
+                                    n.default)(a)),
+                                    1 == this.props.courseStarted) {
+                                    if (!this.state.permissionSendRouteData)
+                                        return
+                                } else
+                                    o(r)
                             }
                         }, {
                             key: "changeTab",
@@ -12119,7 +12124,8 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         width: "0%",
                         down: !1,
                         vvplayer: "vvplayer-transition",
-                        volumeImg: "vvplayer-ber-max"
+                        volumeImg: "vvplayer-ber-max",
+                        data: 0
                     },
                         r._queryPPTDetail(o),
                         r
@@ -12233,6 +12239,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             value: function () {
                                 var e = this;
                                 p.debug("componentDidMount"),
+                                    console.log(1),
                                     this.vvideo.addEventListener("canplay", function () {
                                         e._setDuration()
                                     }),
@@ -12247,7 +12254,8 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             key: "componentWillUnmount",
                             value: function () {
                                 var e = this;
-                                p.debug("componentWillUnmount"),
+                                console.log(2),
+                                    p.debug("componentWillUnmount"),
                                     this.vvideo.removeEventListener("canplay", function () {
                                         e._setDuration()
                                     }),
@@ -12259,18 +12267,6 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                     })
                             }
                         }, {
-                            key: "_queryPPTDetail",
-                            value: function (e) {
-                                if (this.props.accessToken) {
-                                    var a = JSON.parse(localStorage.getItem("video"));
-                                    console.log(a),
-                                        this.setState({
-                                            id: a.id,
-                                            url: a.demand_url
-                                        })
-                                }
-                            }
-                        }, {
                             key: "_setDuration",
                             value: function () {
                                 var e = this.vvideo.duration;
@@ -12278,6 +12274,17 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                     this.setState({
                                         duration: e
                                     })
+                            }
+                        }, {
+                            key: "_queryPPTDetail",
+                            value: function (e) {
+                                if (this.props.accessToken) {
+                                    var a = JSON.parse(localStorage.getItem("video"));
+                                    this.setState({
+                                        id: a.id + "",
+                                        url: a.demand_url
+                                    })
+                                }
                             }
                         }, {
                             key: "componentWillReceiveProps",
@@ -12302,9 +12309,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             key: "playVideo",
                             value: function () {
                                 var e = this;
-                                console.log("234234234234"),
-                                    console.log(this.vvideo),
-                                    this.vvideo.play(),
+                                this.vvideo.play(),
                                     this.Masking.style.opacity = 0,
                                     this.interval = setInterval(function () {
                                         return e.tick()
@@ -12355,15 +12360,19 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "btnPlay",
                             value: function (e) {
-                                var a = this.props;
-                                a.sendVideo,
-                                    a.permissionVideoPlay,
-                                    a.notifyWarn;
-                                "play-icon" == this.state.playText ? this.playVideo() : "pause-icon" == this.state.playText && this.stopVideo()
+                                var a = this.props
+                                    , r = a.sendVideo
+                                    , n = a.permissionVideoPlay
+                                    , t = a.permissionSendVideoAction
+                                    , o = a.notifyWarn;
+                                n ? "play-icon" == this.state.playText ? (this.playVideo(),
+                                    t && r(1, this.props.params.id, this.vvideo.currentTime)) : "pause-icon" == this.state.playText && (this.stopVideo(),
+                                        t && r(2, this.props.params.id, this.vvideo.currentTime)) : o("当前没有操作权限，请举手申请")
                             }
                         }, {
                             key: "btnMax",
                             value: function (e) {
+                                console.log(6);
                                 this.props.sendVideo;
                                 "max-icon" == this.state.maxText ? (this.vvplayer.requestFullscreen ? this.vvplayer.requestFullscreen() : this.vvplayer.mozRequestFullScreen ? this.vvplayer.mozRequestFullScreen() : this.vvplayer.webkitRequestFullScreen && this.vvplayer.webkitRequestFullScreen(),
                                     this.setState({
@@ -12376,18 +12385,28 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "handleOnMouseDown",
                             value: function (e) {
-                                var a = this.props;
-                                a.permissionVideoPlay,
-                                    a.notifyWarn;
-                                this.setState({
-                                    down: !0,
-                                    vvplayer: ""
-                                })
+                                console.log(7);
+                                var a = this.props
+                                    , r = (a.permissionVideoPlay,
+                                        a.notifyWarn);
+                                if (1 == this.props.courseStarted) {
+                                    if (!this.props.isTeacher)
+                                        return void r("当前没有操作权限");
+                                    this.setState({
+                                        down: !0,
+                                        vvplayer: ""
+                                    })
+                                } else
+                                    this.setState({
+                                        down: !0,
+                                        vvplayer: ""
+                                    })
                             }
                         }, {
                             key: "handleOnMouseMove",
                             value: function (e) {
-                                if (this.state.down) {
+                                if (console.log(8),
+                                    this.state.down) {
                                     var a = e || event
                                         , r = this.vvplayerbarWrap.offsetWidth;
                                     this.vvplayerbarWrap.style.transitionDelay = "";
@@ -12411,37 +12430,64 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "handleOnMouseUp",
                             value: function (e) {
-                                this.setState({
-                                    down: !1
-                                })
+                                console.log(9),
+                                    this.setState({
+                                        down: !1
+                                    })
                             }
                         }, {
                             key: "handleOnClick",
                             value: function (e) {
+                                console.log(10);
                                 var a = this.props
                                     , r = a.sendVideo
                                     , n = (a.permissionVideoPlay,
-                                        a.notifyWarn,
-                                        e || event)
-                                    , t = this.vvplayerbarWrap.offsetWidth;
-                                this.vvplayerbarWrap.style.transitionDelay = "";
-                                var o = n.clientX - this.vvplayerbarWrap.offsetLeft - 63
-                                    , i = o / t * 100;
-                                this.vvideo.currentTime = this.vvideo.duration * i / 100,
-                                    this.vvideo.duration * i / 100 < 0 ? (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
-                                        this.setState({
-                                            currentTime: 0
-                                        })) : (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
+                                        a.notifyWarn);
+                                if (1 == this.props.courseStarted) {
+                                    if (!this.props.isTeacher)
+                                        return void n("当前没有操作权限");
+                                    var t = e || event
+                                        , o = this.vvplayerbarWrap.offsetWidth;
+                                    this.vvplayerbarWrap.style.transitionDelay = "";
+                                    var i = t.clientX - this.vvplayerbarWrap.offsetLeft - 63
+                                        , l = i / o * 100;
+                                    this.vvideo.currentTime = this.vvideo.duration * l / 100,
+                                        this.vvideo.duration * l / 100 < 0 ? (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
                                             this.setState({
-                                                currentTime: this.vvideo.duration * i / 100
-                                            })),
-                                    o <= this.vvplayerbarWrap.offsetWidth && o > -10 && (this.vvplayerLoad.style.left = o + "px",
-                                        i >= 100 ? (i = 100,
+                                                currentTime: 0
+                                            })) : (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
+                                                this.setState({
+                                                    currentTime: this.vvideo.duration * l / 100
+                                                })),
+                                        i <= this.vvplayerbarWrap.offsetWidth && i > -10 && (this.vvplayerLoad.style.left = i + "px",
+                                            l >= 100 ? (l = 100,
+                                                this.setState({
+                                                    width: l + "%"
+                                                })) : this.setState({
+                                                    width: l + "%"
+                                                }))
+                                } else {
+                                    var s = e || event
+                                        , u = this.vvplayerbarWrap.offsetWidth;
+                                    this.vvplayerbarWrap.style.transitionDelay = "";
+                                    var c = s.clientX - this.vvplayerbarWrap.offsetLeft - 63
+                                        , d = c / u * 100;
+                                    this.vvideo.currentTime = this.vvideo.duration * d / 100,
+                                        this.vvideo.duration * d / 100 < 0 ? (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
                                             this.setState({
-                                                width: i + "%"
-                                            })) : this.setState({
-                                                width: i + "%"
-                                            }))
+                                                currentTime: 0
+                                            })) : (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
+                                                this.setState({
+                                                    currentTime: this.vvideo.duration * d / 100
+                                                })),
+                                        c <= this.vvplayerbarWrap.offsetWidth && c > -10 && (this.vvplayerLoad.style.left = c + "px",
+                                            d >= 100 ? (d = 100,
+                                                this.setState({
+                                                    width: d + "%"
+                                                })) : this.setState({
+                                                    width: d + "%"
+                                                }))
+                                }
                             }
                         }, {
                             key: "_onPause",
@@ -12463,11 +12509,16 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
         r.default = (0,
             u.connect)(function (e) {
                 var a = !0;
-                return e.course.status && (a = e.me.defaultCanControlContent || e.me.canControlContent),
+                e.course.status && (a = e.me.defaultCanControlContent || e.me.canControlContent);
+                var r = e.me.defaultPermissionSendRoomData;
+                return e.course.status && (r = e.me.defaultPermissionSendRoomData || e.me.defaultCanControlContent || e.me.canControlContent),
                 {
                     video: e.video,
                     accessToken: e.room.accessToken,
-                    permissionVideoPlay: a
+                    permissionVideoPlay: a,
+                    permissionSendVideoAction: r,
+                    isTeacher: "teacher" === e.me.role,
+                    courseStarted: e.course.status
                 }
             }, function (e) {
                 return {
@@ -64467,7 +64518,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     }],
     818: [function (e, a, r) {
         a.exports = {
-            _args: [["websocket@1.0.31", "/www/vvroom/app"]],
+            _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vroom/app"]],
             _from: "websocket@1.0.31",
             _id: "websocket@1.0.31",
             _inBundle: !1,
@@ -64488,7 +64539,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
             _requiredBy: ["/protoo-client"],
             _resolved: "https://registry.npmjs.org/websocket/-/websocket-1.0.31.tgz",
             _spec: "1.0.31",
-            _where: "/www/vvroom/app",
+            _where: "/Users/Liuzq/project/node/vroom/app",
             author: {
                 name: "Brian McKelvey",
                 email: "theturtle32@gmail.com",
