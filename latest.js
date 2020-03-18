@@ -20,7 +20,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     if (fake == "true") {//修改过的代码：10 秒后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
         if (window.Notification && Notification.permission !== "denied") {
             Notification.requestPermission(function (status) {
-                var n = new Notification("掉线伪装已启用", { body: "检测到身份变更，已启用掉线伪装。\n10 秒钟后会退出掉线伪装状态并刷新页面。" });
+                var n = new Notification("掉线伪装已启用", { body: "检测到身份变更，已进入掉线伪装状态。\n30 秒钟后会退出掉线伪装状态并刷新页面。" });
             });
         }
         setTimeout("stopDisguising()", 30000);
