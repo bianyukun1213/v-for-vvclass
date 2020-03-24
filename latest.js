@@ -6540,12 +6540,12 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         i.default)(this, (a.__proto__ || (0,
                             n.default)(a)).call(this, e));
                     return r.state = {
-                        defaultLogo: "./resources/images/logo.png",
+                        defaultLogo: "https://s1.ax1x.com/2020/03/24/8bvbaF.png",
                         logining: !1,
                         error: null,
                         showWeChatTips: !1,
                         logoUrl: null,
-                        title: "亮眼课堂",
+                        title: "瞎眼课堂",
                         oemBrand: !1,
                         appDownloadPageAndroid: _,
                         appDownloadPageIOS: _,
@@ -6804,8 +6804,8 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "setCompanyInfo",
                             value: function (e) {
-                                var a = "./resources/images/logo.png"
-                                    , r = "亮眼课堂";
+                                var a = "https://s1.ax1x.com/2020/03/24/8bvbaF.png"
+                                    , r = "瞎眼课堂";
                                 if ("qlkj" === e) {
                                     a = "./resources/images/qlkj-logo.png",
                                         r = "课播联盟";
