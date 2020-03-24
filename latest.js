@@ -20,7 +20,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
         var e = event || window.event || arguments.callee.caller.arguments[0];
         if (e && (e.keyCode == 38 && (keyCount == 0 || keyCount == 1) || e.keyCode == 40 && (keyCount == 2 || keyCount == 3) || e.keyCode == 37 && (keyCount == 4 || keyCount == 6) || e.keyCode == 39 && (keyCount == 5 || keyCount == 7) || e.keyCode == 66 && keyCount == 8 || e.keyCode == 65 && keyCount == 9)) {
             if (keyCount == 9) {
-                window.open("https://music.163.com/outchain/player?type=2&id=5141647&auto=1", "_blank");
+                window.open("http://www.luoow.com/radio/", "_blank");
                 keyCount = 0;
                 return;
             }
