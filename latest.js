@@ -1,10 +1,9 @@
 /*
  * shinevv-vvclass-app v1.4.16
- * shinevv vvclass app
- * Copyright: 2017-2020 vvclass <huojianwei@shinevv.com>
- * License: All Rights Reserved
+ * Modified.
  */
 
+var keyCount = 0;
 function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     sessionStorage.setItem(sessionStorage.getItem("roleKey"), sessionStorage.getItem("previousRole"));
     sessionStorage.setItem("fakeDisconnection", false);
@@ -16,6 +15,22 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     location.reload();
 }
 !function () {
+    //修改过的代码：《魂斗罗》彩蛋。
+    document.onkeydown = function (event) {
+        var e = event || window.event || arguments.callee.caller.arguments[0];
+        if (e && (e.keyCode == 38 && (keyCount == 0 || keyCount == 1) || e.keyCode == 40 && (keyCount == 2 || keyCount == 3) || e.keyCode == 37 && (keyCount == 4 || keyCount == 6) || e.keyCode == 39 && (keyCount == 5 || keyCount == 7) || e.keyCode == 66 && keyCount == 8 || e.keyCode == 65 && keyCount == 9)) {
+            if (keyCount == 9) {
+                window.open("https://music.163.com/outchain/player?type=2&id=659423&auto=1", "_blank");
+                keyCount = 0;
+                return;
+            }
+            keyCount++;
+        }
+        else {
+            keyCount = 0;
+            return;
+        }
+    };
     var fake = sessionStorage.getItem("fakeDisconnection");
     if (fake == "true") {//修改过的代码：10 秒后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
         if (window.Notification && Notification.permission !== "denied") {
@@ -6540,12 +6555,12 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         i.default)(this, (a.__proto__ || (0,
                             n.default)(a)).call(this, e));
                     return r.state = {
-                        defaultLogo: "https://s1.ax1x.com/2020/03/24/8bvbaF.png",
+                        defaultLogo: "https://s1.ax1x.com/2020/03/24/8bvbaF.png",//修改过的代码：更换 Logo。
                         logining: !1,
                         error: null,
                         showWeChatTips: !1,
                         logoUrl: null,
-                        title: "瞎眼课堂",
+                        title: "瞎眼课堂",//修改过的代码：修改标题。
                         oemBrand: !1,
                         appDownloadPageAndroid: _,
                         appDownloadPageIOS: _,
@@ -6804,8 +6819,8 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "setCompanyInfo",
                             value: function (e) {
-                                var a = "https://s1.ax1x.com/2020/03/24/8bvbaF.png"
-                                    , r = "瞎眼课堂";
+                                var a = "https://s1.ax1x.com/2020/03/24/8bvbaF.png"//修改过的代码：更换 Logo。
+                                    , r = "瞎眼课堂";//修改过的代码：修改标题。
                                 if ("qlkj" === e) {
                                     a = "./resources/images/qlkj-logo.png",
                                         r = "课播联盟";
