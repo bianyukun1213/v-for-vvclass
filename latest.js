@@ -1,5 +1,5 @@
-/*
- * shinevv-vvclass-app v1.4.16
+﻿/*
+ * shinevv-vvclass-app v1.4.17
  * Modified.
  */
 
@@ -32,7 +32,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
         }
     };
     var fake = sessionStorage.getItem("fakeDisconnection");
-    if (fake == "true") {//修改过的代码：10 秒后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
+    if (fake == "true") {//修改过的代码：30 秒钟后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
         if (window.Notification && Notification.permission !== "denied") {
             Notification.requestPermission(function (status) {
                 var n = new Notification("掉线伪装已启用", { body: "检测到身份变更，已进入掉线伪装状态。\n30 秒钟后会退出掉线伪装状态并刷新页面。" });
@@ -6913,10 +6913,10 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                                     method: "post",
                                                     data: o
                                                 }).then(function (e) {
+                                                    localStorage.removeItem("video");
                                                     var t = e.data;
                                                     localStorage.setItem(w.localStorage.roomId, r),
                                                         localStorage.setItem(w.localStorage.nickName, n),
-                                                        console.log(t),
                                                         0 == t.code ? (localStorage.setItem(w.localStorage.serverRecord, t.data.server_record),
                                                             a.handleLoginResponse(r, n, t.data)) : (a.setState({
                                                                 logining: !1
@@ -8626,16 +8626,12 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                         }, {
                             key: "handleClickvideo",
                             value: function (e, a, r) {
-                                var t = this.props
-                                    , o = t.sendRoute;
-                                t.isTeacher;
-                                if (localStorage.setItem("video", (0,
+                                var t = this.props;
+                                t.sendRoute,
+                                    t.isTeacher;
+                                localStorage.setItem("video", (0,
                                     n.default)(a)),
-                                    1 == this.props.courseStarted) {
-                                    if (!this.state.permissionSendRouteData)
-                                        return
-                                } else
-                                    o(r)
+                                    1 != this.props.courseStarted || this.state.permissionSendRouteData
                             }
                         }, {
                             key: "changeTab",
@@ -12376,13 +12372,11 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             key: "btnPlay",
                             value: function (e) {
                                 var a = this.props
-                                    , r = a.sendVideo
-                                    , n = a.permissionVideoPlay
-                                    , t = a.permissionSendVideoAction
-                                    , o = a.notifyWarn;
-                                n ? "play-icon" == this.state.playText ? (this.playVideo(),
-                                    t && r(1, this.props.params.id, this.vvideo.currentTime)) : "pause-icon" == this.state.playText && (this.stopVideo(),
-                                        t && r(2, this.props.params.id, this.vvideo.currentTime)) : o("当前没有操作权限，请举手申请")
+                                    , r = (a.sendVideo,
+                                        a.permissionVideoPlay)
+                                    , n = (a.permissionSendVideoAction,
+                                        a.notifyWarn);
+                                r ? "play-icon" == this.state.playText ? this.playVideo() : "pause-icon" == this.state.playText && this.stopVideo() : n("当前没有操作权限，请举手申请")
                             }
                         }, {
                             key: "btnMax",
@@ -12406,11 +12400,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                         a.notifyWarn);
                                 if (1 == this.props.courseStarted) {
                                     if (!this.props.isTeacher)
-                                        return void r("当前没有操作权限");
-                                    this.setState({
-                                        down: !0,
-                                        vvplayer: ""
-                                    })
+                                        return void r("当前没有操作权限")
                                 } else
                                     this.setState({
                                         down: !0,
@@ -12455,52 +12445,48 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                             value: function (e) {
                                 console.log(10);
                                 var a = this.props
-                                    , r = a.sendVideo
-                                    , n = (a.permissionVideoPlay,
+                                    , r = (a.sendVideo,
+                                        a.permissionVideoPlay,
                                         a.notifyWarn);
                                 if (1 == this.props.courseStarted) {
                                     if (!this.props.isTeacher)
-                                        return void n("当前没有操作权限");
-                                    var t = e || event
-                                        , o = this.vvplayerbarWrap.offsetWidth;
+                                        return void r("当前没有操作权限");
+                                    var n = e || event
+                                        , t = this.vvplayerbarWrap.offsetWidth;
                                     this.vvplayerbarWrap.style.transitionDelay = "";
-                                    var i = t.clientX - this.vvplayerbarWrap.offsetLeft - 63
-                                        , l = i / o * 100;
-                                    this.vvideo.currentTime = this.vvideo.duration * l / 100,
-                                        this.vvideo.duration * l / 100 < 0 ? (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
-                                            this.setState({
-                                                currentTime: 0
-                                            })) : (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
+                                    var o = n.clientX - this.vvplayerbarWrap.offsetLeft - 63
+                                        , i = o / t * 100;
+                                    this.vvideo.currentTime = this.vvideo.duration * i / 100,
+                                        this.vvideo.duration * i / 100 < 0 ? this.setState({
+                                            currentTime: 0
+                                        }) : this.setState({
+                                            currentTime: this.vvideo.duration * i / 100
+                                        }),
+                                        o <= this.vvplayerbarWrap.offsetWidth && o > -10 && (this.vvplayerLoad.style.left = o + "px",
+                                            i >= 100 ? (i = 100,
                                                 this.setState({
-                                                    currentTime: this.vvideo.duration * l / 100
-                                                })),
-                                        i <= this.vvplayerbarWrap.offsetWidth && i > -10 && (this.vvplayerLoad.style.left = i + "px",
-                                            l >= 100 ? (l = 100,
-                                                this.setState({
-                                                    width: l + "%"
+                                                    width: i + "%"
                                                 })) : this.setState({
-                                                    width: l + "%"
+                                                    width: i + "%"
                                                 }))
                                 } else {
-                                    var s = e || event
-                                        , u = this.vvplayerbarWrap.offsetWidth;
+                                    var l = e || event
+                                        , s = this.vvplayerbarWrap.offsetWidth;
                                     this.vvplayerbarWrap.style.transitionDelay = "";
-                                    var c = s.clientX - this.vvplayerbarWrap.offsetLeft - 63
-                                        , d = c / u * 100;
-                                    this.vvideo.currentTime = this.vvideo.duration * d / 100,
-                                        this.vvideo.duration * d / 100 < 0 ? (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
-                                            this.setState({
-                                                currentTime: 0
-                                            })) : (r(this.state.playing, this.props.params.id, this.vvideo.currentTime),
+                                    var u = l.clientX - this.vvplayerbarWrap.offsetLeft - 63
+                                        , c = u / s * 100;
+                                    this.vvideo.currentTime = this.vvideo.duration * c / 100,
+                                        this.vvideo.duration * c / 100 < 0 ? this.setState({
+                                            currentTime: 0
+                                        }) : this.setState({
+                                            currentTime: this.vvideo.duration * c / 100
+                                        }),
+                                        u <= this.vvplayerbarWrap.offsetWidth && u > -10 && (this.vvplayerLoad.style.left = u + "px",
+                                            c >= 100 ? (c = 100,
                                                 this.setState({
-                                                    currentTime: this.vvideo.duration * d / 100
-                                                })),
-                                        c <= this.vvplayerbarWrap.offsetWidth && c > -10 && (this.vvplayerLoad.style.left = c + "px",
-                                            d >= 100 ? (d = 100,
-                                                this.setState({
-                                                    width: d + "%"
+                                                    width: c + "%"
                                                 })) : this.setState({
-                                                    width: d + "%"
+                                                    width: c + "%"
                                                 }))
                                 }
                             }
@@ -65072,7 +65058,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     821: [function (e, a, r) {
         a.exports = {
             name: "shinevv-vvclass-app",
-            version: "1.4.16",
+            version: "1.4.17",
             private: !0,
             description: "shinevv vvclass app",
             author: "vvclass <huojianwei@shinevv.com>",
