@@ -7671,7 +7671,7 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                         })), c.default.createElement("td", {
                                             className: "characterName",
                                             colSpan: "3"
-                                        }, c.default.createElement("span", null, e.displayName)),/* "admin" === e.props.me.role ? */u.default.createElement("td", null, u.default.createElement("span", {//修改过的代码：移植自教师，使任何身份都可踢助教。
+                                        }, c.default.createElement("span", null, e.displayName)),/* "admin" === e.props.me.role ? */c.default.createElement("td", null, c.default.createElement("span", {//修改过的代码：移植自教师，使任何身份都可踢助教。
                                             className: "kick_off",
                                             onClick: function (r) {
                                                 return that.handleKickMemberOffteacher(r, e)//使用了 that 避免代码混淆的影响，同时更改了参数。
