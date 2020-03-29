@@ -7767,11 +7767,11 @@ function stopDisguising() {//修改过的代码：退出掉线伪装状态。
                                 }
                                 else if (e.role == "student") {
                                     this.props.changeMemberRole(e.peerName, e.displayName, "visitor");
-                                    g.debug("handleMoveMemberToVisitor");
+                                    b.debug("handleMoveMemberToVisitor");
                                 }
                                 else if (e.role == "visitor") {
                                     this.props.changeMemberRole(e.peerName, e.displayName, "student");
-                                    g.debug("handleMoveMemberToStudent");
+                                    b.debug("handleMoveMemberToStudent");
                                 }
                                 //2 == sessionStorage.getItem(p.default.sessionStorage.loopflag) ? this.props.notifyWarn("请先停止轮巡或刷新网页,再进行切换") : "student" == e.role ? this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToVisitor"),
                                 //    this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : b.debug("handleMoveMemberToVisitor but has no permission") : "visitor" == e.role && (this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToStudent"),
