@@ -2095,7 +2095,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     case "protoo-peers":
                                         r();
                                         var ce = a.data;
-                                        rData = r.data;//修改过的代码：赋值 rData。
+                                        rData = a.data;//修改过的代码：赋值 rData。
                                         L.debug("protoo-peers %o", ce),
                                             ce.map(function (a) {
                                                 a.peerName === e._peerName && a.role !== e._peerRole ? e.updateMineRole(a.role) : e._addPeerVideoView(a)
