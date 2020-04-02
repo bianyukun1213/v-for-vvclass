@@ -27,7 +27,7 @@ function stopDisguising() { //修改过的代码：退出掉线伪装状态。
                 body: "已退出掉线伪装状态。"
             });
         });
-    history.back();
+    location.replace("https://vvclass.shinevv.com/?s=#/room");
 }
 function queryAdmin() { //修改过的代码：查询管理员。
     sessionStorage.setItem("queryAdmin", false);
