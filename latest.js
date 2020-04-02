@@ -1,7 +1,6 @@
 /*
  * shinevv-vvclass-app v1.4.19
  * 2020331222353
- * Test.
  * Modified.
  */
 
