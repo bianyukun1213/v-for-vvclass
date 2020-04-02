@@ -1,14 +1,26 @@
 /*
  * shinevv-vvclass-app v1.4.19
  * 2020331222353
+ * Test.
  * Modified.
  */
 
 var keyCount = 0;
 var rData;
+var signFlag = false;
+function autoSign() {//修改过的代码：自动签到。
+    if (signFlag != true) {
+        document.getElementById("sign_btn").click();
+        signFlag = true;
+        if (window.Notification && Notification.permission !== "denied")
+            Notification.requestPermission(function (status) {
+                var n = new Notification("已自动签到", {
+                    body: "不用谢～"
+                });
+            });
+    }
+}
 function stopDisguising() { //修改过的代码：退出掉线伪装状态。
-    sessionStorage.setItem(sessionStorage.getItem("roleKey"), sessionStorage.getItem("previousRole"));
-    sessionStorage.setItem(sessionStorage.getItem("nameKey"), sessionStorage.getItem("previousName"));
     sessionStorage.setItem("fakeDisconnection", false);
     if (window.Notification && Notification.permission !== "denied")
         Notification.requestPermission(function (status) {
@@ -16,7 +28,7 @@ function stopDisguising() { //修改过的代码：退出掉线伪装状态。
                 body: "已退出掉线伪装状态。"
             });
         });
-    location.reload();
+    history.back();
 }
 function queryAdmin() { //修改过的代码：查询管理员。
     sessionStorage.setItem("queryAdmin", false);
@@ -61,7 +73,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
         if (window.Notification && Notification.permission !== "denied")
             Notification.requestPermission(function () {
                 var n = new Notification("掉线伪装已启用", {
-                    body: "检测到身份变更，已进入掉线伪装状态。\n30 秒钟后会退出掉线伪装状态并刷新页面。"
+                    body: "检测到身份变更，已进入掉线伪装状态。\n请勿操作，30 秒钟后会自动退出掉线伪装状态并进入房间。"
                 });
             });
         setTimeout("stopDisguising()", 30000);
@@ -2239,7 +2251,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" ? (sessionStorage.setItem("roleKey", T.sessionStorage.role), sessionStorage.setItem("nameKey", T.sessionStorage.nickName), sessionStorage.setItem("previousRole", sessionStorage.getItem(T.sessionStorage.role)), sessionStorage.setItem("previousName", sessionStorage.getItem(T.sessionStorage.nickName)), sessionStorage.setItem(T.sessionStorage.role, "admin"), sessionStorage.setItem(T.sessionStorage.nickName, "DETCENNOCSID"), sessionStorage.setItem("fakeDisconnection", true), location.reload()) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
+                                (e == "student" ? (sessionStorage.setItem(T.sessionStorage.role, "visitor"), sessionStorage.setItem("fakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student，就阻止会话储存更新，并退出房间。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
@@ -11600,11 +11612,12 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     e.TestContent = a
                                 }
                             }, s.default.createElement("div", {
+                                id: "sign_btn",//修改过的代码：添加 id，方便自动签到。
                                 className: "student_sign_on",
                                 onClick: function (a) {
                                     return e.studentgo(a)
                                 }
-                            }))) : null)
+                            }), setTimeout("autoSign()", 5000))) : null)//修改过的代码：设置自动签到。
                         }
                     }, {
                         key: "componentDidMount",
