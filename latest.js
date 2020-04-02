@@ -8,6 +8,7 @@ var keyCount = 0;
 var rData;
 function stopDisguising() { //修改过的代码：退出掉线伪装状态。
     sessionStorage.setItem(sessionStorage.getItem("roleKey"), sessionStorage.getItem("previousRole"));
+    sessionStorage.setItem(sessionStorage.getItem("nameKey"), sessionStorage.getItem("previousName"));
     sessionStorage.setItem("fakeDisconnection", false);
     if (window.Notification && Notification.permission !== "denied")
         Notification.requestPermission(function (status) {
@@ -2238,7 +2239,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" ? (sessionStorage.setItem("roleKey", T.sessionStorage.role), sessionStorage.setItem("previousRole", sessionStorage.getItem(T.sessionStorage.role)), sessionStorage.setItem(T.sessionStorage.role, "admin"), sessionStorage.setItem("fakeDisconnection", true), location.reload()) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
+                                (e == "student" ? (sessionStorage.setItem("roleKey", T.sessionStorage.role), sessionStorage.setItem("nameKey", T.sessionStorage.nickName), sessionStorage.setItem("previousRole", sessionStorage.getItem(T.sessionStorage.role)), sessionStorage.setItem("previousName", sessionStorage.getItem(T.sessionStorage.nickName)), sessionStorage.setItem(T.sessionStorage.role, "admin"), sessionStorage.setItem(T.sessionStorage.nickName, "DETCENNOCSID"), sessionStorage.setItem("fakeDisconnection", true), location.reload()) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student，就阻止会话储存更新，并自动刷新。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
