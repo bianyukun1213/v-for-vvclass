@@ -20,14 +20,13 @@ function autoSign() {//修改过的代码：自动签到。
     }
 }
 function stopDisguising() { //修改过的代码：退出掉线伪装状态。
-    sessionStorage.setItem("fakeDisconnection", false);
+    location.replace("https://vvclass.shinevv.com/?s=#/room");
     if (window.Notification && Notification.permission !== "denied")
         Notification.requestPermission(function (status) {
             var n = new Notification("掉线伪装已停用", {
                 body: "已退出掉线伪装状态。"
             });
         });
-    location.replace("https://vvclass.shinevv.com/?s=#/room");
 }
 function queryAdmin() { //修改过的代码：查询管理员。
     sessionStorage.setItem("queryAdmin", false);
