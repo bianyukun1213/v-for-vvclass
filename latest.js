@@ -9,8 +9,11 @@ var rData;
 var signFlag = false;
 function autoSign() {//修改过的代码：自动签到。
     if (signFlag != true) {
-        document.getElementById("sign_btn").click();
         signFlag = true;
+        var btn = document.getElementById("sign_btn");
+        if (btn == undefined)
+            return;
+        btn.click();
         if (window.Notification && Notification.permission !== "denied")
             Notification.requestPermission(function (status) {
                 var n = new Notification("已自动签到", {
