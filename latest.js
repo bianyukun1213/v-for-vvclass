@@ -1,6 +1,5 @@
-/*
+﻿/*
  * shinevv-vvclass-app v1.4.19
- * 2020331222353
  * Modified.
  */
 
@@ -1664,7 +1663,8 @@ function queryAdmin() { //修改过的代码：查询管理员。
                         value: function () {
                             var e = this;
                             return this._protoo.send("start-student-signin", {}).then(function (a) {
-                                e.queryRoomData()
+                                e._dispatch(v.allList([])),
+                                    e.queryRoomData()
                             }).catch(function (e) {
                                 L.error("startSignin() | failed: %o", e)
                             })
@@ -2205,8 +2205,9 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                                     text: "已被管理员移出房间！"
                                                 }));
                                             //修改过的代码：被踢不会有三天内禁止进入的限制。
-                                            //var Me = (0, _.default)().add(72, "hours");
-                                            //localStorage.setItem(D.localStorage.kickMemberExpire, Me),
+                                            //var _e = (0,
+                                            //    P.default)().add(72, "hours");
+                                            //localStorage.setItem(T.localStorage.kickMemberExpire, _e),
                                             //    "teacher" === e._peerRole && e.RoomLeave(),
                                             //    e.close(),
                                             //    setTimeout(function () {
@@ -7857,7 +7858,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     }, c.default.createElement("span", null, "昵称")), c.default.createElement("td", null, "授权"), c.default.createElement("td", null, "举手"), this.props.me.defaultCanControlContent ? c.default.createElement("td", null, "移出") : null)) : null, i.map(function (a, r) {
                                         return c.default.createElement("tbody", {
                                             key: r
-                                        }, /*e.props.me.name == a.peerName ? null : */ c.default.createElement("tr", null, c.default.createElement("td", { //修改过的代码：这里注释掉，可以实现双击使自己蓝名。
+                                        },/* e.props.me.name == a.peerName ? null : */c.default.createElement("tr", null, c.default.createElement("td", {//修改过的代码：这里注释掉，可以实现双击使自己蓝名。
                                             className: "changeRole",
                                             onDoubleClick: function () {
                                                 return e.handleMoveMemberToStudent(a)
@@ -65326,7 +65327,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
     }],
     821: [function (e, a, r) {
         a.exports = {
-            _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vroom/app"]],
+            _args: [["websocket@1.0.31", "/data/class/app"]],
             _from: "websocket@1.0.31",
             _id: "websocket@1.0.31",
             _inBundle: !1,
@@ -65347,7 +65348,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
             _requiredBy: ["/protoo-client"],
             _resolved: "https://registry.npmjs.org/websocket/-/websocket-1.0.31.tgz",
             _spec: "1.0.31",
-            _where: "/Users/Liuzq/project/node/vroom/app",
+            _where: "/data/class/app",
             author: {
                 name: "Brian McKelvey",
                 email: "theturtle32@gmail.com",
