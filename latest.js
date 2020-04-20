@@ -1,6 +1,6 @@
-﻿/*
- * shinevv-vvclass-app v1.4.19
- * 202041405021839
+/*
+ * shinevv-vvclass-app v1.4.20
+ * 2020420184536397
  * Modified.
  */
 
@@ -4081,7 +4081,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 var e = 0
                                     , a = new Object;
                                 this.add = function (r, n) {
-                                    this.containsKey(r) || e++ ,
+                                    this.containsKey(r) || e++,
                                         a[r] = n
                                 }
                                     ,
@@ -5415,7 +5415,6 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                         allVideoDisabled: !0,
                         timer: null,
                         memberArr: [],
-                        roomid: ["55145", "54817", "54809", "54808", "54807", "54806", "54805", "54804", "54777", "54776", "54775", "54774", "54773", "54771", "54770", "54769", "54768", "54767", "54765", "54764", "54763", "54762", "54761", "54760", "54759", "54758", "54757", "54756", "54753", "54752", "54751", "54750", "54749", "54748", "54746", "54740", "54739", "54738", "54737", "54671", "54670", "54669", "54668", "54667", "54666", "54665", "54664", "54663", "54662", "54598", "54597", "54596", "54595", "54594", "54593", "54592", "54591", "54590", "54589", "54588", "54586", "54584", "54583", "54582", "54581", "54580", "54579", "54578", "54577", "54576", "54575", "54574", "54573", "54572", "54571", "54570", "54569", "54568", "54567", "54566", "54565", "54563", "54562", "54561", "54560", "50071", "50072", "11111"],
                         power: !1
                     },
                         r.state.loop ? sessionStorage.setItem(z.sessionStorage.loopflag, "2") : sessionStorage.setItem(z.sessionStorage.loopflag, "1"),
@@ -5587,7 +5586,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     className: this.props.me.requestRoleChange ? "request_av_enable" : "request_av_disable",
                                     title: "互动",
                                     onClick: this.handleOnRequestRoleChange.bind(this)
-                                }) : null,/* ("teacher" == r.role || "tutor" == r.role) && this.state.roomid.indexOf(n.roomId) >= 0 && this.props.courseStarted && */0 != this.props.visitorMembers.length && 0 != this.props.studentMembers.length ? c.default.createElement("div", {
+                                }) : null,/* ("teacher" == r.role || "tutor" == r.role) && this.props.courseStarted && */0 != this.props.visitorMembers.length && 0 != this.props.studentMembers.length ? c.default.createElement("div", {
                                     className: this.state.loop ? "icon-all-loop-true" : "icon-all-loop",//修改过的代码：任何身份可轮询，无视房间号。
                                     title: "轮巡",
                                     onClick: this.handleOnLoop.bind(this)
@@ -5939,7 +5938,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     , r = a.roomStart
                                     , n = a.roomLeave;
                                 if (a.course.status) {
-                                    if (clearInterval(this.state.timer),
+                                    clearInterval(this.state.timer),
                                         this.setState({
                                             loop: !1,
                                             timer: null,
@@ -5948,13 +5947,11 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                         sessionStorage.setItem(z.sessionStorage.loopflag, "1"),
                                         this.setState({
                                             StartStudyText: "开始上课"
-                                        }),
-                                        this.state.roomid.indexOf(this.props.room.roomId) >= 0) {
-                                        this.props.allList([]),
-                                            this.props.changeSignVisiblityState(!1),
-                                            this.props.changeSignVisiblity(!1)
-                                    }
-                                    this.state.isRecording && this.handleChangeRecordStatus(),
+                                        });
+                                    this.props.allList([]),
+                                        this.props.changeSignVisiblityState(!1),
+                                        this.props.changeSignVisiblity(!1),
+                                        this.state.isRecording && this.handleChangeRecordStatus(),
                                         n()
                                 } else
                                     this.setState({
@@ -14535,7 +14532,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                 case "REMOVE_MEMBER":
                     var u = a.payload.peerName;
                     return e.closeMember = u,
-                        e.closenum++ ,
+                        e.closenum++,
                         delete e.teachers[u],
                         delete e.tutors[u],
                         delete e.students[u],
@@ -19036,7 +19033,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                 },
                     e._f || (e._f = o),
                     n && (n.n = o),
-                    e[p]++ ,
+                    e[p]++,
                     "F" !== t && (e._i[t] = o)),
                     e
             },
@@ -20827,7 +20824,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 var l = o++
                                     , s = !1;
                                 r.push(void 0),
-                                    i++ ,
+                                    i++,
                                     a.resolve(e).then(function (e) {
                                         s || (s = !0,
                                             r[l] = e,
@@ -21550,7 +21547,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     var u = e(function (e, n) {
                         l(e, u, a, "_i"),
                             e._t = a,
-                            e._i = f++ ,
+                            e._i = f++,
                             e._l = void 0,
                             null != n && s(n, r, e[o], e)
                     });
@@ -23372,9 +23369,9 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             var n, t, o, i = new Array(r), l = 8 * r - a - 1, s = (1 << l) - 1, u = s >> 1, c = 23 === a ? P(2, -24) - P(2, -77) : 0, d = 0, h = e < 0 || 0 === e && 1 / e < 0 ? 1 : 0;
             for ((e = _(e)) != e || e === C ? (t = e != e ? 1 : 0,
                 n = s) : (n = R(D(e) / T),
-                    e * (o = P(2, -n)) < 1 && (n-- ,
+                    e * (o = P(2, -n)) < 1 && (n--,
                         o *= 2),
-                    (e += n + u >= 1 ? c / o : c * P(2, 1 - u)) * o >= 2 && (n++ ,
+                    (e += n + u >= 1 ? c / o : c * P(2, 1 - u)) * o >= 2 && (n++,
                         o /= 2),
                     n + u >= s ? (t = 0,
                         n = s) : n + u >= 1 ? (t = (e * o - 1) * P(2, a),
@@ -23394,13 +23391,13 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
         function A(e, a, r) {
             var n, t = 8 * r - a - 1, o = (1 << t) - 1, i = o >> 1, l = t - 7, s = r - 1, u = e[s--], c = 127 & u;
             for (u >>= 7; l > 0; c = 256 * c + e[s],
-                s-- ,
+                s--,
                 l -= 8)
                 ;
             for (n = c & (1 << -l) - 1,
                 c >>= -l,
                 l += a; l > 0; n = 256 * n + e[s],
-                s-- ,
+                s--,
                 l -= 8)
                 ;
             if (0 === c)
@@ -27912,7 +27909,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     var n = 0
                         , t = 0;
                     e[0].replace(/%[a-zA-Z%]/g, function (e) {
-                        "%%" !== e && (n++ ,
+                        "%%" !== e && (n++,
                             "%c" === e && (t = n))
                     }),
                         e.splice(t, 0, r)
@@ -38463,7 +38460,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 }).map(function (e) {
                                     return String(e.mid)
                                 });
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 r.version = 0,
                                 r.origin = {
                                     address: a.ip,
@@ -38677,7 +38674,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 , t = e.map(function (e) {
                                     return String(e.mid)
                                 });
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 r.version = 0,
                                 r.origin = {
                                     address: a.ip,
@@ -39005,7 +39002,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 , i = (e.media || []).map(function (e) {
                                     return String(e.mid)
                                 });
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 o.version = 0,
                                 o.origin = {
                                     address: "0.0.0.0",
@@ -39237,7 +39234,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 , i = this._transportRemoteParameters.dtlsParameters
                                 , l = {}
                                 , s = e;
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 l.version = 0,
                                 l.origin = {
                                     address: "0.0.0.0",
@@ -39654,7 +39651,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 }).map(function (e) {
                                     return String(e.mid)
                                 });
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 o.version = 0,
                                 o.origin = {
                                     address: "0.0.0.0",
@@ -39917,7 +39914,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                 , i = e.map(function (e) {
                                     return String(e.mid)
                                 });
-                            this._sdpGlobalFields.version++ ,
+                            this._sdpGlobalFields.version++,
                                 o.version = 0,
                                 o.origin = {
                                     address: "0.0.0.0",
@@ -41612,7 +41609,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     let n = 0
                         , t = 0;
                     e[0].replace(/%[a-zA-Z%]/g, e => {
-                        "%%" !== e && (n++ ,
+                        "%%" !== e && (n++,
                             "%c" === e && (t = n))
                     }
                     ),
@@ -49132,7 +49129,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     throw Error(i(150));
                 if (null == (s = c.call(s)))
                     throw Error(i(151));
-                for (var d = c = null, p = l, g = l = 0, y = null, b = s.next(); null !== p && !b.done; g++ ,
+                for (var d = c = null, p = l, g = l = 0, y = null, b = s.next(); null !== p && !b.done; g++,
                     b = s.next()) {
                     p.index > g ? (y = p,
                         p = null) : y = p.sibling;
@@ -49151,14 +49148,14 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     return r(t, p),
                         c;
                 if (null === p) {
-                    for (; !b.done; g++ ,
+                    for (; !b.done; g++,
                         b = s.next())
                         null !== (b = h(t, b.value, u)) && (l = o(b, l, g),
                             null === d ? c = b : d.sibling = b,
                             d = b);
                     return c
                 }
-                for (p = n(t, p); !b.done; g++ ,
+                for (p = n(t, p); !b.done; g++,
                     b = s.next())
                     null !== (b = f(p, t, g, b.value, u)) && (e && null !== b.alternate && p.delete(null === b.key ? g : b.key),
                         l = o(b, l, g),
@@ -62739,7 +62736,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                 }
                 var r = this
                     , n = setTimeout(function () {
-                        r._attempts++ ,
+                        r._attempts++,
                             r._operationTimeoutCb && (r._timeout = setTimeout(function () {
                                 r._operationTimeoutCb(r._attempts)
                             }, r._operationTimeout),
@@ -63753,7 +63750,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                     var t = 0
                         , o = 0;
                     e[0].replace(/%[a-zA-Z%]/g, function (e) {
-                        "%%" !== e && (t++ ,
+                        "%%" !== e && (t++,
                             "%c" === e && (o = t))
                     }),
                         e.splice(o, 0, n)
@@ -65350,7 +65347,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
     }],
     821: [function (e, a, r) {
         a.exports = {
-            _args: [["websocket@1.0.31", "/data/class/app"]],
+            _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vroom/app"]],
             _from: "websocket@1.0.31",
             _id: "websocket@1.0.31",
             _inBundle: !1,
@@ -65371,7 +65368,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             _requiredBy: ["/protoo-client"],
             _resolved: "https://registry.npmjs.org/websocket/-/websocket-1.0.31.tgz",
             _spec: "1.0.31",
-            _where: "/data/class/app",
+            _where: "/Users/Liuzq/project/node/vroom/app",
             author: {
                 name: "Brian McKelvey",
                 email: "theturtle32@gmail.com",
@@ -65844,7 +65841,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                             for (r = 0,
                                 n = (t = this.callbacks[a]).length; r < n; r++)
                                 t[r]._groupName === e && (t.splice(r, 1),
-                                    r-- ,
+                                    r--,
                                     n--);
                         return this
                     }
@@ -65889,7 +65886,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
     824: [function (e, a, r) {
         a.exports = {
             name: "shinevv-vvclass-app",
-            version: "1.4.19",
+            version: "1.4.20",
             private: !0,
             description: "shinevv vvclass app",
             author: "vvclass <huojianwei@shinevv.com>",
