@@ -1,5 +1,6 @@
 ﻿/*
  * shinevv-vvclass-app v1.4.19
+ * 202041405021839
  * Modified.
  */
 
@@ -22,17 +23,17 @@ function autoSign() {//修改过的代码：自动签到。
     }
 }
 function stopDisguising() { //修改过的代码：退出掉线伪装状态。
-    sessionStorage.setItem("fakeDisconnection", false);
+    sessionStorage.setItem("onFakeDisconnection", false);
     location.replace("https://vvclass.shinevv.com/?s=#/room");
     if (window.Notification && Notification.permission !== "denied")
         Notification.requestPermission(function (status) {
-            var n = new Notification("掉线伪装已停用", {
+            var n = new Notification("已退出掉线伪装状态", {
                 body: "已退出掉线伪装状态。"
             });
         });
 }
-function queryAdmin() { //修改过的代码：查询管理员。
-    sessionStorage.setItem("queryAdmin", false);
+function queryAdmins() { //修改过的代码：查询管理员。
+    sessionStorage.setItem("queryAdmins", false);
     if (rData == undefined) {
         alert("无法查询！");
         return;
@@ -43,17 +44,37 @@ function queryAdmin() { //修改过的代码：查询管理员。
     });
     if (admins != "") {
         admins = admins.substring(0, admins.length - 1);
-        alert("查询到管理员（巡课）：\n" + admins + "。");
+        alert("查询到管理员（巡课人员）：\n" + admins + "。");
     } else
         alert("查询无结果！");
 }
-!function () {
-    //修改过的代码：《魂斗罗》彩蛋。
+function getFDSettings() {//修改过的代码：读取掉线伪装功能相关设置。
+    var enableFD = localStorage.getItem("enableFakeDisconnection");
+    if (enableFD != "true")
+        return false;
+    else
+        return true;
+}
+!function () {//修改过的代码：按键相关功能。
     document.onkeydown = function (event) {
         var e = event || window.event || arguments.callee.caller.arguments[0];
         if (e && e.keyCode == 36) {
             keyCount = 0;
-            sessionStorage.setItem("queryAdmin", true);
+            sessionStorage.setItem("queryAdmins", true);
+            location.reload();
+            return;
+        }
+        if (e && e.keyCode == 35) {
+            keyCount = 0;
+            if (getFDSettings()) {
+                localStorage.setItem("enableFakeDisconnection", false);
+                alert("已停用掉线伪装功能。");
+            }
+
+            else {
+                localStorage.setItem("enableFakeDisconnection", true);
+                alert("已启用掉线伪装功能。");
+            }
             location.reload();
             return;
         }
@@ -69,25 +90,25 @@ function queryAdmin() { //修改过的代码：查询管理员。
             return;
         }
     };
-    var fake = sessionStorage.getItem("fakeDisconnection");
+    var fake = sessionStorage.getItem("onFakeDisconnection");
     if (fake == "true") { //修改过的代码：30 秒钟后自动退出掉线伪装状态。注意，这里取到的值为字符串，非布尔型。
         if (window.Notification && Notification.permission !== "denied")
             Notification.requestPermission(function () {
-                var n = new Notification("掉线伪装已启用", {
+                var n = new Notification("已进入掉线伪装状态", {
                     body: "检测到身份变更，已进入掉线伪装状态。\n请勿操作，30 秒钟后会自动退出掉线伪装状态并进入房间。"
                 });
             });
         setTimeout("stopDisguising()", 30000);
     }
-    var queryAdmin = sessionStorage.getItem("queryAdmin");
-    if (queryAdmin == "true") { //修改过的代码：5 秒钟后查询管理员。
+    var queryAdmins = sessionStorage.getItem("queryAdmins");
+    if (queryAdmins == "true") { //修改过的代码：5 秒钟后查询管理员。
         if (window.Notification && Notification.permission !== "denied")
             Notification.requestPermission(function () {
                 var n = new Notification("5 秒钟后查询管理员", {
                     body: "请稍候。"
                 });
             });
-        setTimeout("queryAdmin()", 5000);
+        setTimeout("queryAdmins()", 5000);
     }
     return function e(a, r, n) {
         function t(i, l) {
@@ -129,7 +150,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
             },
             ignoreRolesForAudioVideo: ["visitor", "admin"],
             defaultRolesPermissionSendRoomData: ["teacher"],
-            defaultRolesCanControlContent: ["teacher", "tutor", "student", "visitor", "admin"], //修改过的代码：给学生、旁听、巡课增加内容控制权限。
+            defaultRolesCanControlContent: ["teacher", "tutor", "student", "visitor", "admin"], //修改过的代码：给学生、旁听、巡课人员增加内容控制权限。
             defaultRolesCanRequestControlContent: [],
             localStorage: {
                 previousHash: "vvroom.shinevv.previoushash",
@@ -2085,7 +2106,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                         //修改过的代码：管理员进入房间时提示。
                                         if (window.Notification && Notification.permission !== "denied" && oe == "admin")
                                             Notification.requestPermission(function () {
-                                                var n = new Notification("管理员（巡课）「" + te + "」进入房间", {
+                                                var n = new Notification("管理员（巡课人员）「" + te + "」进入房间", {
                                                     body: te + "（" + ne + "）"
                                                 });
                                             });
@@ -2102,7 +2123,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                         //修改过的代码：管理员退出房间时提示。
                                         if (window.Notification && Notification.permission !== "denied" && ue == "admin")
                                             Notification.requestPermission(function () {
-                                                var n = new Notification("管理员（巡课）「" + se + "」退出房间", {
+                                                var n = new Notification("管理员（巡课人员）「" + se + "」退出房间", {
                                                     body: se + "（" + le + "）"
                                                 });
                                             });
@@ -2254,7 +2275,7 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" ? (sessionStorage.setItem(T.sessionStorage.role, "visitor"), sessionStorage.setItem("fakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student，就阻止会话储存更新，并退出房间。
+                                (e == "student" && getFDSettings() ? (sessionStorage.setItem(T.sessionStorage.role, "visitor"), sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
@@ -5595,7 +5616,8 @@ function queryAdmin() { //修改过的代码：查询管理员。
                                             className: "btn-group"
                                         }, c.default.createElement("div", {
                                             className: "room-name"
-                                        }, c.default.createElement("span", null, this.props.room.title, " (", this.props.room.roomId, ")")), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 / 60) >= 10 ? Math.floor(this.state.seconds / 60 / 60) : "0" + Math.floor(this.state.seconds / 60 / 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 % 60) >= 10 ? Math.floor(this.state.seconds / 60 % 60) : "0" + Math.floor(this.state.seconds / 60 % 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds % 60) >= 10 ? Math.floor(this.state.seconds % 60) : "0" + Math.floor(this.state.seconds % 60)), "teacher" == r.role ? t.status ? c.default.createElement("a", {
+                                            //修改过的代码：显示掉线伪装功能相关设置。
+                                        }, c.default.createElement("span", null, getFDSettings() ? "掉线伪装功能已启用 | " : "掉线伪装功能已停用 | ", this.props.room.title, " (", this.props.room.roomId, ")")), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 / 60) >= 10 ? Math.floor(this.state.seconds / 60 / 60) : "0" + Math.floor(this.state.seconds / 60 / 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 % 60) >= 10 ? Math.floor(this.state.seconds / 60 % 60) : "0" + Math.floor(this.state.seconds / 60 % 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds % 60) >= 10 ? Math.floor(this.state.seconds % 60) : "0" + Math.floor(this.state.seconds % 60)), "teacher" == r.role ? t.status ? c.default.createElement("a", {
                                             className: "btn btn-info",
                                             onClick: this.handleStartStudy.bind(this)
                                         }, "结束上课") : c.default.createElement("a", {
