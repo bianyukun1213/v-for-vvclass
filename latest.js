@@ -68,12 +68,9 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             keyCount = 0;
             if (getFDSettings()) {
                 localStorage.setItem("enableFakeDisconnection", false);
-                alert("已停用掉线伪装功能。");
             }
-
             else {
                 localStorage.setItem("enableFakeDisconnection", true);
-                alert("已启用掉线伪装功能。");
             }
             location.reload();
             return;
@@ -5587,7 +5584,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     title: "互动",
                                     onClick: this.handleOnRequestRoleChange.bind(this)
                                 }) : null,/* ("teacher" == r.role || "tutor" == r.role) && this.props.courseStarted && */0 != this.props.visitorMembers.length && 0 != this.props.studentMembers.length ? c.default.createElement("div", {
-                                    className: this.state.loop ? "icon-all-loop-true" : "icon-all-loop",//修改过的代码：任何身份可轮询，无视房间号。
+                                    className: this.state.loop ? "icon-all-loop-true" : "icon-all-loop",//修改过的代码：任何身份可轮询，无需处于上课状态。
                                     title: "轮巡",
                                     onClick: this.handleOnLoop.bind(this)
                                 }, s) : null, !0 === (0,
