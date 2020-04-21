@@ -52,8 +52,10 @@ function queryAdmins() {//修改过的代码：查询、踢出管理员。
         if (thisInQRD == undefined)
             alert("查询到管理员（巡课人员）：\n" + adminsText);
         else {
-            if (thisInQRD._peerRole == "admin")
-                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n其中「" + thisInQRD._displayName + "」为您自己。\n您可选择其中一位进行制裁，输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+            if (thisInQRD._peerRole == "admin") {
+                var index = admins.indexOf(admins.filter(r => r.peerName == thisInQRD._peerName)[0]) + 1;
+                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n其中第 " + index + " 名为您自己。\n您可选择其中一位进行制裁，输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+            }
             else
                 var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n您可选择其中一位进行制裁，输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
             if (input == null)
