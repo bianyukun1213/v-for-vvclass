@@ -86,10 +86,10 @@ function queryAdmins() {//修改过的代码：查询、踢出管理员。
 }
 function getFDSettings() {//修改过的代码：读取掉线伪装功能相关设置。
     var enableFD = localStorage.getItem("enableFakeDisconnection");
-    if (enableFD != "true")
-        return false;
-    else
+    if (enableFD != "false")
         return true;
+    else
+        return false;
 }
 !function () {//修改过的代码：按键相关功能。
     document.onkeydown = function (event) {
