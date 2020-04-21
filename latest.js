@@ -6,6 +6,7 @@
 
 var keyCount = 0;
 var rData;
+var thisInQRD;
 var signFlag = false;
 function autoSign() {//修改过的代码：自动签到。
     if (signFlag != true) {
@@ -22,7 +23,7 @@ function autoSign() {//修改过的代码：自动签到。
             });
     }
 }
-function stopDisguising() { //修改过的代码：退出掉线伪装状态。
+function stopDisguising() {//修改过的代码：退出掉线伪装状态。
     sessionStorage.setItem("onFakeDisconnection", false);
     location.replace("https://vvclass.shinevv.com/?s=#/room");
     if (window.Notification && Notification.permission !== "denied")
@@ -32,19 +33,52 @@ function stopDisguising() { //修改过的代码：退出掉线伪装状态。
             });
         });
 }
-function queryAdmins() { //修改过的代码：查询管理员。
+function queryAdmins() {//修改过的代码：查询、踢出管理员。
     sessionStorage.setItem("queryAdmins", false);
     if (rData == undefined) {
         alert("无法查询！");
         return;
     }
-    var admins = "";
+    var admins = [];
+    var adminsText = "";
     rData.map(function (r) {
-        r.role == "admin" ? admins = admins + r.displayName + "（" + r.peerName + "）、" : null;
+        r.role == "admin" ? admins.push(r) : null;
     });
-    if (admins != "") {
-        admins = admins.substring(0, admins.length - 1);
-        alert("查询到管理员（巡课人员）：\n" + admins + "。");
+    if (admins.length > 0) {
+        admins.map(function (r) {
+            adminsText = adminsText + (admins.indexOf(r) + 1) + "、" + r.displayName + "（" + r.peerName + "）\n";
+        });
+        adminsText = adminsText.substring(0, adminsText.length - 1);
+        if (thisInQRD == undefined)
+            alert("查询到管理员（巡课人员）：\n" + adminsText);
+        else {
+            if (thisInQRD._peerRole == "admin")
+                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n其中「" + thisInQRD._displayName + "」为您自己。\n您可选择其中一位进行制裁，输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+            else
+                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n您可选择其中一位进行制裁，输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+            if (input == null)
+                return;
+            if (input.split(" ").length == 2 && parseInt(input.split(" ")[0]) > 0 && parseInt(input.split(" ")[0]) <= admins.length && (parseInt(input.split(" ")[1]) == 1 || parseInt(input.split(" ")[1]) == 2)) {
+                var adminIndex = parseInt(input.split(" ")[0]);
+                var option = parseInt(input.split(" ")[1]);
+                switch (option) {
+                    case 1:
+                        thisInQRD._protoo.send("send-broadcast-kick-member-off", {
+                            peerName: admins[adminIndex - 1].peerName,
+                            displayName: admins[adminIndex - 1].displayName
+                        });
+                        break;
+                    case 2:
+                        thisInQRD._protoo.send("change-member-role", {
+                            peerName: admins[adminIndex - 1].peerName,
+                            role: "student"
+                        });
+                        break;
+                }
+            }
+            else
+                alert("无效的输入！");
+        }
     } else
         alert("查询无结果！");
 }
@@ -1607,6 +1641,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                         key: "queryRoomData",
                         value: function () {
                             var e = this;
+                            thisInQRD = this;//修改过的代码：方便移除管理员。
                             return this._protoo.send("query-room-data", {}).then(function (a) {
                                 L.debug("_queryRoomData success %o", a);
                                 var r = a.route
@@ -2272,7 +2307,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" && getFDSettings() ? (sessionStorage.setItem(T.sessionStorage.role, "visitor"), sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
+                                (e == "student" && getFDSettings() ? (sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
