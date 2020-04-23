@@ -54,10 +54,10 @@ function queryAdmins() {//修改过的代码：查询、踢出管理员。
         else {
             if (thisInQRD._peerRole == "admin") {
                 var index = admins.indexOf(admins.filter(r => r.peerName == thisInQRD._peerName)[0]) + 1;
-                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n其中第 " + index + " 名为您自己。\n您可选择其中一位进行制裁（危险操作，慎用！），输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n其中第 " + index + " 名为您自己。\n您可选择其中一位进行制裁（危险操作，请谨慎使用该功能！），输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
             }
             else
-                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n您可选择其中一位进行制裁（危险操作，慎用！），输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
+                var input = prompt("查询到管理员（巡课人员）：\n" + adminsText + "\n您可选择其中一位进行制裁（危险操作，请谨慎使用该功能！），输入格式为序号加空格加选项代码。\n可用选项：\n1：移除\n2：变更身份为互动学生");
             if (input == null)
                 return;
             if (input.split(" ").length == 2 && parseInt(input.split(" ")[0]) > 0 && parseInt(input.split(" ")[0]) <= admins.length && (parseInt(input.split(" ")[1]) == 1 || parseInt(input.split(" ")[1]) == 2)) {
@@ -2309,7 +2309,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" && getFDSettings() ? (sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e), window.Notification && Notification.permission !== "denied" ? Notification.requestPermission(function (status) { var n = new Notification("角色已变更为互动学生", { body: "掉线伪装功能已停用，未阻止会话储存更新。" }); }) : null), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
+                                (e == "student" && getFDSettings() ? (sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e), e == "student" && window.Notification && Notification.permission !== "denied" ? Notification.requestPermission(function (status) { var n = new Notification("角色已变更为互动学生", { body: "掉线伪装功能已停用，未阻止会话储存更新。" }); }) : null), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
