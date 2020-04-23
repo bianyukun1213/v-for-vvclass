@@ -2309,7 +2309,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                     produce: this._produce
                                 })),
                                 //sessionStorage.setItem(T.sessionStorage.role, e),
-                                (e == "student" && getFDSettings() ? (sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e)), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
+                                (e == "student" && getFDSettings() ? (sessionStorage.setItem("onFakeDisconnection", true), location.replace(document.referrer)) : sessionStorage.setItem(T.sessionStorage.role, e), window.Notification && Notification.permission !== "denied" ? Notification.requestPermission(function (status) { var n = new Notification("角色已变更为互动学生", { body: "掉线伪装功能已停用，未阻止会话储存更新。" }); }) : null), //修改过的代码：如果被更改为 student 且启用掉线伪装功能，就阻止会话储存更新，并退出房间。
                                 this._dispatch(g.memberRoleChanged({
                                     peerName: this._peerName,
                                     role: e
