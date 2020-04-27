@@ -7,6 +7,7 @@
 var keyCount = 0;
 var rData;
 var thisInQRD;
+var thisForPPTDownload;
 var signFlag = false;
 function autoSign() {//修改过的代码：自动签到。
     if (signFlag != true) {
@@ -91,6 +92,13 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
     else
         return false;
 }
+function getCCSettings() {//修改过的代码：读取掉内容控制权限相关设置。
+    var enableCC = localStorage.getItem("enableContentControl");
+    if (enableCC != "false")
+        return true;
+    else
+        return false;
+}
 !function () {//修改过的代码：按键相关功能。
     document.onkeydown = function (event) {
         var e = event || window.event || arguments.callee.caller.arguments[0];
@@ -100,6 +108,19 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             location.reload();
             return;
         }
+        if (e && e.keyCode == 45) {
+            keyCount = 0;
+            if (thisForPPTDownload == undefined)
+                alert("最近没有使用 PPT！");
+            else {
+                alert("在下载之前，您需要注意两件事：\n1（十分重要！）、按 Del 键关闭默认控制权限的授予，否则切换 PPT 等操作会同步给所有人\n2、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口（浏览器拦截的话可在地址栏右侧进行设置）");
+                thisForPPTDownload.state.imgs.map(function (img) {
+                    var randomnumber = Math.floor((Math.random() * 100) + 1);
+                    window.open(img.location, "_blank", randomnumber);
+                });
+            }
+            return;
+        }
         if (e && e.keyCode == 35) {
             keyCount = 0;
             if (getFDSettings()) {
@@ -107,6 +128,17 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             }
             else {
                 localStorage.setItem("enableFakeDisconnection", true);
+            }
+            location.reload();
+            return;
+        }
+        if (e && e.keyCode == 46) {
+            keyCount = 0;
+            if (getCCSettings()) {
+                localStorage.setItem("enableContentControl", false);
+            }
+            else {
+                localStorage.setItem("enableContentControl", true);
             }
             location.reload();
             return;
@@ -183,8 +215,8 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
             },
             ignoreRolesForAudioVideo: ["visitor", "admin"],
             defaultRolesPermissionSendRoomData: ["teacher"],
-            defaultRolesCanControlContent: ["teacher", "tutor", "student", "visitor", "admin"], //修改过的代码：给学生、旁听、巡课人员增加内容控制权限。
-            defaultRolesCanRequestControlContent: [],
+            defaultRolesCanControlContent: getCCSettings() ? ["teacher", "tutor", "student", "visitor", "admin"] : ["teacher", "tutor"], //修改过的代码：给学生、旁听、巡课人员增加内容控制权限。
+            defaultRolesCanRequestControlContent: getCCSettings() ? [] : ["student", "visitor"],
             localStorage: {
                 previousHash: "vvroom.shinevv.previoushash",
                 avtest: "vvroom.shinevv.audiovideo.test",
@@ -5650,7 +5682,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                                         }, c.default.createElement("div", {
                                             className: "room-name"
                                             //修改过的代码：显示掉线伪装功能相关设置。
-                                        }, c.default.createElement("span", null, getFDSettings() ? "掉线伪装功能已启用" : "掉线伪装功能已停用", " | ", this.props.room.title, " (", this.props.room.roomId, ")")), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 / 60) >= 10 ? Math.floor(this.state.seconds / 60 / 60) : "0" + Math.floor(this.state.seconds / 60 / 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 % 60) >= 10 ? Math.floor(this.state.seconds / 60 % 60) : "0" + Math.floor(this.state.seconds / 60 % 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds % 60) >= 10 ? Math.floor(this.state.seconds % 60) : "0" + Math.floor(this.state.seconds % 60)), "teacher" == r.role ? t.status ? c.default.createElement("a", {
+                                        }, c.default.createElement("span", null, getCCSettings() ? "默认内容控制权限已授予" : "默认内容控制权限未授予", " | ", getFDSettings() ? "掉线伪装功能已启用" : "掉线伪装功能已停用", " | ", this.props.room.title, " (", this.props.room.roomId, ")")), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 / 60) >= 10 ? Math.floor(this.state.seconds / 60 / 60) : "0" + Math.floor(this.state.seconds / 60 / 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds / 60 % 60) >= 10 ? Math.floor(this.state.seconds / 60 % 60) : "0" + Math.floor(this.state.seconds / 60 % 60)), c.default.createElement("span", null, ":"), c.default.createElement("span", null, Math.floor(this.state.seconds % 60) >= 10 ? Math.floor(this.state.seconds % 60) : "0" + Math.floor(this.state.seconds % 60)), "teacher" == r.role ? t.status ? c.default.createElement("a", {
                                             className: "btn btn-info",
                                             onClick: this.handleStartStudy.bind(this)
                                         }, "结束上课") : c.default.createElement("a", {
@@ -9197,6 +9229,8 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                         }, {
                             key: "onChangeFile",
                             value: function (e) {
+                                alert("使用助手时请勿上传文件，否则将无法删除！");//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
+                                return;
                                 if (this.state.maxSize < this.state.nowSize)
                                     return alert("容量不足");
                                 var a = this.props.room.roomId;
@@ -9504,6 +9538,7 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
                         o.default)(a, [{
                             key: "render",
                             value: function () {
+                                thisForPPTDownload = this;//修改过的代码：方便下载 PPT。
                                 var e = this
                                     , a = this.state.imgs && this.state.imgs instanceof Array
                                     , r = a ? this.state.index + 1 : 0
