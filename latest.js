@@ -111,13 +111,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         if (e && e.keyCode == 45) {
             keyCount = 0;
             if (thisForPPTDownload == undefined)
-                alert("最近没有使用 PPT！");
+                alert("最近没有使用任何文档！您可在关闭内容控制权限的授予[按 Del(ete) 键]后自主切换文档。");
             else {
-                alert("在查看之前，您需要注意两件事：\n1（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则切换 PPT 等操作会同步给所有人\n2、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口（浏览器拦截的话可在地址栏右侧进行设置）");
-                thisForPPTDownload.state.imgs.map(function (img) {
-                    var randomnumber = Math.floor((Math.random() * 100) + 1);
-                    window.open(img.location, "_blank", randomnumber);
-                });
+                if (confirm("在查看之前，您需要注意两件事：\n1（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则切换文档等操作会同步给所有人\n2、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口（浏览器拦截的话可在地址栏右侧进行设置）\n如果您已准备好，请点击「确定」。"))
+                    thisForPPTDownload.state.imgs.map(function (img) {
+                        var randomnumber = Math.floor((Math.random() * 100) + 1);
+                        window.open(img.location, "_blank", randomnumber);
+                    });
             }
             return;
         }
