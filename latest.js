@@ -1,6 +1,6 @@
 /*
- * shinevv-vvclass-app v1.4.20
- * 2020420184536397
+ * shinevv-vvclass-app v1.6.0
+ * 2020430235310248
  * Modified.
  */
 
@@ -467,6 +467,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         this._record_file_id = -1,
                         this._record_file_serial = 0,
                         this._uploadTasks = [],
+                        this._videoFlag = !0,
+                        this._audioFlag = !0,
+                        this._leftUrl = "",
+                        this._rightUrl = "",
                         this._webcam = {
                             device: null,
                             resolution: "hd"
@@ -521,7 +525,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         key: "unmuteMic",
                         value: function () {
                             L.debug("unmuteMic()"),
-                                this._teacher_lock_audio && "teacher" !== this._peerRole ? L.debug("unmuteMic() fail(teacher lock the unmuteMic)") : this._micProducer.resume()
+                                console.log("555555555"),
+                                this._micProducer.resume()
                         }
                     }, {
                         key: "_disableMic",
@@ -1197,7 +1202,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     }),
                                     a.on("unhandled", function () {
                                         L.debug('mic Producer "unhandled" event')
-                                    })
+                                    }),
+                                    e._dispatch(g.changeVideoFlag({
+                                        allVideoDisabled: e._videoFlag
+                                    })),
+                                    e._dispatch(g.changeAudioFlag({
+                                        allAudioMute: e._audioFlag
+                                    }))
                             }).then(function () {
                                 L.debug("_setMicProducer() succeeded");
                                 var r = new MediaStream;
@@ -1588,13 +1599,22 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             var a = e.peerName
                                 , r = e.role
                                 , n = e.displayName;
-                            a !== this._peerName && ("student" !== r && "tutor" !== r && "teacher" !== r || this._dispatch(g.addPeer({
-                                role: r,
-                                name: a,
-                                displayName: n,
-                                device: {},
-                                consumers: []
-                            })))
+                            if (a === this._peerName)
+                                return console.log("fhajsdhkajshdfkashdfkashkfshd"),
+                                    this._dispatch(g.changeVideoFlag({
+                                        allVideoDisabled: this._videoFlag
+                                    })),
+                                    void this._dispatch(g.changeAudioFlag({
+                                        allAudioMute: this._audioFlag
+                                    }));
+                            "student" !== r && "tutor" !== r && "teacher" !== r || (console.log("ioioioioioioio"),
+                                this._dispatch(g.addPeer({
+                                    role: r,
+                                    name: a,
+                                    displayName: n,
+                                    device: {},
+                                    consumers: []
+                                })))
                         }
                     }, {
                         key: "_removePeerVideoView",
@@ -1701,26 +1721,35 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     , t = a.drawBoard
                                     , o = a.videoState
                                     , i = a.pptStates
-                                    , l = a.signinState;
+                                    , l = a.signinState
+                                    , s = a.doubleScreen
+                                    , u = a.leftUrl
+                                    , c = a.rightUrl
+                                    , d = a.audiostatus
+                                    , h = a.videostatus;
                                 if (null != o) {
-                                    var s = o.method
-                                        , u = o.id
-                                        , c = o.point;
-                                    s && u && (e._dispatch(k.receiveVideo({
-                                        method: s,
-                                        id: u,
-                                        point: c
+                                    var m = o.method
+                                        , f = o.id
+                                        , p = o.point;
+                                    m && f && (e._dispatch(k.receiveVideo({
+                                        method: m,
+                                        id: f,
+                                        point: p
                                     })),
                                         setTimeout(function () {
                                             e._dispatch(k.removeReceiveVideo({
-                                                method: s,
-                                                id: u,
-                                                point: c
+                                                method: m,
+                                                id: f,
+                                                point: p
                                             }))
                                         }, 500))
                                 }
                                 e._dispatch(k.clearPPT()),
                                     e._dispatch(v.changeSignVisiblity(l)),
+                                    e._dispatch(g.changeDoubleUrl({
+                                        leftUrl: u,
+                                        rightUrl: c
+                                    })),
                                     null != i && i.length > 0 && i.map(function (a) {
                                         var r = a.index
                                             , n = a.id;
@@ -1729,25 +1758,25 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                             id: n
                                         }))
                                     });
-                                var d = {
+                                var y = {
                                     actiontype: 3,
                                     guid: e.guid(),
                                     drawBoardId: "*"
                                 };
-                                if (e._dispatch(b.receivePath(d)),
+                                if (e._dispatch(b.receivePath(y)),
                                     e._dispatch(b.clearDrawBoardHistory()),
                                     null != t) {
-                                    var h = t.pages
-                                        , m = t.index
-                                        , f = t.orientations;
-                                    if (h && e._dispatch(b.receiveDrawBoardPages(h)),
-                                        m && e._dispatch(b.receiveDrawBoardIndex(m)),
-                                        f)
-                                        for (var p in f) {
-                                            var g = f[p];
+                                    var S = t.pages
+                                        , M = t.index
+                                        , w = t.orientations;
+                                    if (S && e._dispatch(b.receiveDrawBoardPages(S)),
+                                        M && e._dispatch(b.receiveDrawBoardIndex(M)),
+                                        w)
+                                        for (var C in w) {
+                                            var B = w[C];
                                             e._dispatch(b.receiveDrawBoardOri({
-                                                id: p,
-                                                ori: g
+                                                id: C,
+                                                ori: B
                                             }))
                                         }
                                 }
@@ -1757,9 +1786,27 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                             e._dispatch(b.removeReceivePath(a))
                                         }, 500)
                                 }) : setTimeout(function () {
-                                    e._dispatch(b.removeReceivePath(d))
+                                    e._dispatch(b.removeReceivePath(y))
                                 }, 500),
-                                    null != r && e._dispatch(k.receiveRoute(r))
+                                    null != r && e._dispatch(k.receiveRoute(r)),
+                                    s && (e.sendRoute(c),
+                                        e.sendRoute(u),
+                                        e._leftUrl = u,
+                                        e._rightUrl = c,
+                                        e._dispatch(g.changeDoubleFlag({
+                                            doubleFlag: !0
+                                        })),
+                                        e._dispatch(k.receiveRoute(c)),
+                                        e._dispatch(k.receiveRoute(u)),
+                                        e._dispatch(g.changeDoubleUrl({
+                                            leftUrl: u,
+                                            rightUrl: c
+                                        }))),
+                                    e._dispatch(g.changeDoubleFlag({
+                                        doubleFlag: s
+                                    })),
+                                    e._videoFlag = h,
+                                    e._audioFlag = d
                             }).catch(function (e) {
                                 L.error("_queryRoomData() | failed: %o", e)
                             })
@@ -1776,6 +1823,93 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             })
                         }
                     }, {
+                        key: "changeAudio",
+                        value: function (e) {
+                            var a = e.allAudioMute;
+                            return this._protoo.send("change-audio-status", {
+                                allAudioMute: a
+                            }).then(function (e) { }).catch(function (e) {
+                                L.error("changeAudio() | failed: %o", e)
+                            })
+                        }
+                    }, {
+                        key: "changeVideo",
+                        value: function (e) {
+                            var a = e.allVideoDisabled;
+                            return this._protoo.send("change-video-status", {
+                                allVideoDisabled: a
+                            }).then(function (e) { }).catch(function (e) {
+                                L.error("changeVideo() | failed: %o", e)
+                            })
+                        }
+                    }, {
+                        key: "startDoubleFlag",
+                        value: function (e) {
+                            var a = this
+                                , r = e.leftUrl
+                                , n = e.rightUrl;
+                            return this._protoo.send("start-double-screen", {
+                                leftUrl: r,
+                                rightUrl: n
+                            }).then(function (e) {
+                                a.queryRoomData()
+                            }).catch(function (e) {
+                                L.error("startDoubleFlag() | failed: %o", e)
+                            })
+                        }
+                    }, {
+                        key: "changleft",
+                        value: function (e) {
+                            var a = this._rightUrl;
+                            this._leftUrl = e,
+                                this._dispatch(g.changeDoubleUrl({
+                                    leftUrl: e,
+                                    rightUrl: a
+                                }))
+                        }
+                    }, {
+                        key: "changright",
+                        value: function (e) {
+                            var a = this._leftUrl;
+                            this._rightUrl = e,
+                                this._dispatch(g.changeDoubleUrl({
+                                    leftUrl: a,
+                                    rightUrl: e
+                                }))
+                        }
+                    }, {
+                        key: "DoubleLeft",
+                        value: function (e) {
+                            var a = e.leftUrl;
+                            return this.changleft(a),
+                                this._protoo.send("double-left", {
+                                    leftUrl: a
+                                }).then(function (e) { }).catch(function (e) {
+                                    L.error("startDoubleFlag() | failed: %o", e)
+                                })
+                        }
+                    }, {
+                        key: "DoubleRight",
+                        value: function (e) {
+                            var a = e.rightUrl;
+                            return this.changright(a),
+                                this._protoo.send("double-right", {
+                                    rightUrl: a
+                                }).then(function (e) { }).catch(function (e) {
+                                    L.error("startDoubleFlag() | failed: %o", e)
+                                })
+                        }
+                    }, {
+                        key: "endDoubleFlag",
+                        value: function () {
+                            var e = this;
+                            return this._protoo.send("end-double-screen", {}).then(function (a) {
+                                e.queryRoomData()
+                            }).catch(function (e) {
+                                L.error("endDoubleFlag() | failed: %o", e)
+                            })
+                        }
+                    }, {
                         key: "studentSignin",
                         value: function () {
                             var e = this;
@@ -1784,7 +1918,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     text: "签到成功"
                                 }))
                             }).catch(function (e) {
-                                L.error("startSignin() | failed: %o", e)
+                                L.error("studentSignin() | failed: %o", e)
                             })
                         }
                     }, {
@@ -1794,7 +1928,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             return this._protoo.send("end-student-signin", {}).then(function (a) {
                                 e.queryRoomData()
                             }).catch(function (e) {
-                                L.error("startSignin() | failed: %o", e)
+                                L.error("stopSignin() | failed: %o", e)
                             })
                         }
                     }, {
@@ -2006,10 +2140,33 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             this._protoo.on("request", function (a, r, n) {
                                 switch (L.debug("_handleProtooRequest() [method:%s, data:%o]", a.method, a.data),
                                 a.method) {
-                                    case "student-signin-list":
+                                    case "double-right":
                                         r();
                                         var t = a.data;
-                                        e._dispatch(v.allList(t));
+                                        e.changleft(t);
+                                        break;
+                                    case "double-left":
+                                        r();
+                                        var o = a.data;
+                                        e.changleft(o);
+                                        break;
+                                    case "start-double-screen":
+                                        r(),
+                                            e.queryRoomData(),
+                                            e._dispatch(g.changeDoubleFlag({
+                                                doubleFlag: !0
+                                            }));
+                                        break;
+                                    case "end-double-screen":
+                                        r(),
+                                            e._dispatch(g.changeDoubleFlag({
+                                                doubleFlag: !1
+                                            }));
+                                        break;
+                                    case "student-signin-list":
+                                        r();
+                                        var i = a.data;
+                                        e._dispatch(v.allList(i));
                                         break;
                                     case "end-student-signin":
                                         r(),
@@ -2018,150 +2175,154 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         break;
                                     case "start-student-signin":
                                         r();
-                                        var o = a;
-                                        e._dispatch(v.changeSignVisiblity(o)),
-                                            e._dispatch(v.changeSignVisiblityState(o));
+                                        var l = a;
+                                        e._dispatch(v.changeSignVisiblity(l)),
+                                            e._dispatch(v.changeSignVisiblityState(l));
                                         break;
                                     case "student-signin":
                                         r();
-                                        var i = a.data;
-                                        e._dispatch(v.addstudent(i));
+                                        var s = a.data;
+                                        e._dispatch(v.addstudent(s));
                                         break;
                                     case "mediasoup-notification":
                                         r();
-                                        var l = a.data;
-                                        e._room.receiveNotification(l);
+                                        var u = a.data;
+                                        e._room.receiveNotification(u);
                                         break;
                                     case "active-speaker":
                                         r();
-                                        var s = a.data.peerName;
-                                        e._dispatch(g.setRoomActiveSpeaker(s));
+                                        var c = a.data.peerName;
+                                        e._dispatch(g.setRoomActiveSpeaker(c));
                                         break;
                                     case "display-name-changed":
                                         r();
-                                        var u = a.data
-                                            , c = u.peerName
-                                            , d = u.displayName
-                                            , h = u.oldDisplayName
-                                            , m = e._room.getPeerByName(c);
-                                        if (!m) {
+                                        var d = a.data
+                                            , h = d.peerName
+                                            , m = d.displayName
+                                            , f = d.oldDisplayName
+                                            , w = e._room.getPeerByName(h);
+                                        if (!w) {
                                             L.error("peer not found");
                                             break
                                         }
-                                        m.appData.displayName = d,
-                                            e._dispatch(g.setPeerDisplayName(d, c)),
+                                        w.appData.displayName = m,
+                                            e._dispatch(g.setPeerDisplayName(m, h)),
                                             e._dispatch(p.notify({
-                                                text: h + " 现在叫 " + d
+                                                text: f + " 现在叫 " + m
                                             }));
                                         break;
                                     case "receive-broadcast-text-message":
                                         r();
-                                        var f = a.data.message;
-                                        e._dispatch(y.receiveMessage(f));
+                                        var C = a.data.message;
+                                        e._dispatch(y.receiveMessage(C));
                                         break;
                                     case "receive-broadcast-path-message":
                                         r();
-                                        var w = a.data.paths;
-                                        e._dispatch(b.receivePath(w)),
+                                        var B = a.data.paths;
+                                        e._dispatch(b.receivePath(B)),
                                             setTimeout(function () {
-                                                e._dispatch(b.removeReceivePath(w))
+                                                e._dispatch(b.removeReceivePath(B))
                                             }, 500);
                                         break;
                                     case "receive-broadcast-route-message":
                                         r();
-                                        var C = a.data.url;
-                                        if (C && -1 != C.indexOf("/room/contentPeerView")) {
-                                            var B = C.substr(C.lastIndexOf("/") + 1);
-                                            e._dispatch(g.showPeerInContent(B))
+                                        var _ = a.data.url;
+                                        if (_ && -1 != _.indexOf("/room/contentPeerView")) {
+                                            var R = _.substr(_.lastIndexOf("/") + 1);
+                                            e._dispatch(g.showPeerInContent(R))
                                         }
-                                        e._dispatch(k.receiveRoute(C));
+                                        e._dispatch(k.receiveRoute(_));
                                         break;
                                     case "receive-broadcast-video-message":
                                         r();
-                                        var _ = a.data
-                                            , R = _.method
-                                            , D = _.id
-                                            , E = _.point;
+                                        var D = a.data
+                                            , E = D.method
+                                            , z = D.id
+                                            , H = D.point;
                                         e._dispatch(k.receiveVideo({
-                                            method: R,
-                                            id: D,
-                                            point: E
+                                            method: E,
+                                            id: z,
+                                            point: H
                                         })),
                                             setTimeout(function () {
                                                 e._dispatch(k.removeReceiveVideo({
-                                                    method: R,
-                                                    id: D,
-                                                    point: E
+                                                    method: E,
+                                                    id: z,
+                                                    point: H
                                                 }))
                                             }, 500);
                                         break;
                                     case "receive-broadcast-ppt-message":
                                         r();
-                                        var z = a.data
-                                            , H = z.index
-                                            , A = z.id;
+                                        var A = a.data
+                                            , G = A.index
+                                            , K = A.id;
                                         e._dispatch(k.receivePPT({
-                                            index: H,
-                                            id: A
+                                            index: G,
+                                            id: K
                                         }));
                                         break;
                                     case "receive-broadcast-draw-board-pages":
-                                        var G = a.data.pages;
-                                        e._dispatch(b.receiveDrawBoardPages(G));
+                                        var x = a.data.pages;
+                                        e._dispatch(b.receiveDrawBoardPages(x));
                                         break;
                                     case "receive-broadcast-draw-board-index":
-                                        var K = a.data.index;
-                                        e._dispatch(b.receiveDrawBoardIndex(K));
+                                        var F = a.data.index;
+                                        e._dispatch(b.receiveDrawBoardIndex(F));
                                         break;
                                     case "receive-broadcast-draw-board-ori":
-                                        var x = a.data
-                                            , F = x.id
-                                            , N = x.ori;
+                                        var N = a.data
+                                            , O = N.id
+                                            , W = N.ori;
                                         e._dispatch(b.receiveDrawBoardOri({
-                                            id: F,
-                                            ori: N
+                                            id: O,
+                                            ori: W
                                         }));
                                         break;
                                     case "receive-broadcast-add-file-message":
                                         r();
-                                        var O = a.data.uploadFile;
-                                        e._dispatch(S.receiveFile(O));
+                                        var j = a.data.uploadFile;
+                                        e._dispatch(S.receiveFile(j));
                                         break;
                                     case "receive-broadcast-delete-file-message":
                                         r();
-                                        var W = a.data.deleteId;
-                                        e._dispatch(S.receiveDeleteFile(W));
+                                        var V = a.data.deleteId;
+                                        e._dispatch(S.receiveDeleteFile(V));
                                         break;
                                     case "track-slient":
                                         L.debug("track-slient() [method:%s, data:%o]", a.method, a.data),
                                             r();
-                                        var j = a.data
-                                            , V = j.type
-                                            , I = j.status;
-                                        "audio" == V ? !1 === I ? (e._teacher_lock_audio = !0,
+                                        var I = a.data
+                                            , U = I.type
+                                            , J = I.status;
+                                        "audio" == U ? !1 === J ? (e._teacher_lock_audio = !0,
+                                            e._audioFlag = !1,
                                             e.muteMic()) : (e._teacher_lock_audio = !1,
-                                                e.unmuteMic()) : "video" == V && (!1 === I ? (e._teacher_lock_video = !0,
+                                                e._audioFlag = !0,
+                                                e.unmuteMic()) : "video" == U && (!1 === J ? (e._teacher_lock_video = !0,
+                                                    e._videoFlag = !1,
                                                     e.disableWebcam()) : (e._teacher_lock_video = !1,
+                                                        e._videoFlag = !0,
                                                         e.enableWebcam()));
                                         break;
                                     case "join-me":
                                         r(),
                                             L.debug("protoo Peer recv join-me");
-                                        var J = e._displayName
-                                            , U = e._device
-                                            , q = e._peerRole
-                                            , Z = a.data
-                                            , Y = Z.start_time
-                                            , Q = Z.duration_on_server;
+                                        var q = e._displayName
+                                            , Z = e._device
+                                            , Y = e._peerRole
+                                            , Q = a.data
+                                            , $ = Q.start_time
+                                            , X = Q.duration_on_server;
                                         e._join({
-                                            displayName: J,
-                                            device: U,
-                                            role: q
+                                            displayName: q,
+                                            device: Z,
+                                            role: Y
                                         });
-                                        var $ = null;
-                                        null != Y && null != Q && ($ = Q,
-                                            (($ = ((new Date).getTime() - Y) / 1e3) < 0 || $ < Q) && ($ = Q)),
-                                            e._dispatch(M.startCourse($));
+                                        var ee = null;
+                                        null != $ && null != X && (ee = X,
+                                            ((ee = ((new Date).getTime() - $) / 1e3) < 0 || ee < X) && (ee = X)),
+                                            e._dispatch(M.startCourse(ee));
                                         break;
                                     case "leave-me":
                                         r(),
@@ -2173,54 +2334,54 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         break;
                                     case "receive-broadcast-h5-ppt-message":
                                         r();
-                                        var X = a.data
-                                            , ee = X.type
-                                            , ae = X.method;
-                                        e._dispatch(k.receiveMethodPPT(ee, ae));
+                                        var ae = a.data
+                                            , re = ae.type
+                                            , ne = ae.method;
+                                        e._dispatch(k.receiveMethodPPT(re, ne));
                                         break;
                                     case "new-protoo-peer":
                                         r();
-                                        var re = a.data
-                                            , ne = re.peerName
-                                            , te = re.displayName
-                                            , oe = re.role;
-                                        L.debug("new-protoo-peer, peerName %s, displayName %s, role %s", ne, te, oe),
+                                        var te = a.data
+                                            , oe = te.peerName
+                                            , ie = te.displayName
+                                            , le = te.role;
+                                        L.debug("new-protoo-peer, peerName %s, displayName %s, role %s", oe, ie, le),
                                             e._dispatch(g.addMember(a.data)),
                                             e._addPeerVideoView(a.data);
                                         //修改过的代码：管理员进入房间时提示。
-                                        if (window.Notification && Notification.permission !== "denied" && oe == "admin")
+                                        if (window.Notification && Notification.permission !== "denied" && le == "admin")
                                             Notification.requestPermission(function () {
-                                                var n = new Notification("管理员（巡课人员）「" + te + "」进入房间", {
-                                                    body: te + "（" + ne + "）"
+                                                var n = new Notification("管理员（巡课人员）「" + ie + "」进入房间", {
+                                                    body: ie + "（" + oe + "）"
                                                 });
                                             });
                                         break;
                                     case "remove-protoo-peer":
                                         r();
-                                        var ie = a.data
-                                            , le = ie.peerName
-                                            , se = ie.displayName
-                                            , ue = ie.role;
-                                        L.debug("remove-protoo-peer, peerName %s, displayName %s, role %s", le, se, ue),
-                                            e._dispatch(g.removeMember(le)),
-                                            e._removePeerVideoView(le);
+                                        var se = a.data
+                                            , ue = se.peerName
+                                            , ce = se.displayName
+                                            , de = se.role;
+                                        L.debug("remove-protoo-peer, peerName %s, displayName %s, role %s", ue, ce, de),
+                                            e._dispatch(g.removeMember(ue)),
+                                            e._removePeerVideoView(ue);
                                         //修改过的代码：管理员退出房间时提示。
-                                        if (window.Notification && Notification.permission !== "denied" && ue == "admin")
+                                        if (window.Notification && Notification.permission !== "denied" && de == "admin")
                                             Notification.requestPermission(function () {
-                                                var n = new Notification("管理员（巡课人员）「" + se + "」退出房间", {
-                                                    body: se + "（" + le + "）"
+                                                var n = new Notification("管理员（巡课人员）「" + ce + "」退出房间", {
+                                                    body: ce + "（" + ue + "）"
                                                 });
                                             });
                                         break;
                                     case "protoo-peers":
                                         r();
-                                        var ce = a.data;
+                                        var he = a.data;
                                         rData = a.data;//修改过的代码：赋值 rData。
-                                        L.debug("protoo-peers %o", ce),
-                                            ce.map(function (a) {
+                                        L.debug("protoo-peers %o", he),
+                                            he.map(function (a) {
                                                 a.peerName === e._peerName && a.role !== e._peerRole ? e.updateMineRole(a.role) : e._addPeerVideoView(a)
                                             }),
-                                            e._dispatch(g.addMembers(ce));
+                                            e._dispatch(g.addMembers(he));
                                         break;
                                     case "reject-duplication-teacher":
                                         r(),
@@ -2253,86 +2414,102 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     case "receive-broadcast-content-control-message":
                                         r(),
                                             L.debug("request-content-control-message");
-                                        var de = a.data
-                                            , he = de.flag
-                                            , me = de.peerName
-                                            , fe = de.displayName
-                                            , pe = de.time;
-                                        "teacher" !== e._peerRole && "admin" !== e._peerRole && "tutor" !== e._peerRole || (1 == he ? e._dispatch(p.notify({
-                                            text: fe + " ：举手了"
+                                        var me = a.data
+                                            , fe = me.flag
+                                            , pe = me.peerName
+                                            , ge = me.displayName
+                                            , ye = me.time;
+                                        "teacher" !== e._peerRole && "admin" !== e._peerRole && "tutor" !== e._peerRole || (1 == fe ? e._dispatch(p.notify({
+                                            text: ge + " ：举手了"
                                         })) : e._dispatch(p.notify({
-                                            text: fe + " ：取消了举手"
+                                            text: ge + " ：取消了举手"
                                         }))),
                                             e._dispatch(g.setMemberRequestControl({
-                                                flag: he,
-                                                peerName: me,
-                                                displayName: fe,
-                                                time: pe
+                                                flag: fe,
+                                                peerName: pe,
+                                                displayName: ge,
+                                                time: ye
                                             }));
                                         break;
                                     case "receive-broadcast-request-role-change-message":
                                         r(),
                                             L.debug("request-role-change-message");
-                                        var ge = a.data
-                                            , ye = ge.flag
-                                            , be = ge.peerName
-                                            , ke = ge.displayName;
+                                        var be = a.data
+                                            , ke = be.flag
+                                            , ve = be.peerName
+                                            , Se = be.displayName;
                                         e._dispatch(g.setMemberRequestAudioVideo({
-                                            flag: ye,
-                                            peerName: be,
-                                            displayName: ke
+                                            flag: ke,
+                                            peerName: ve,
+                                            displayName: Se
                                         }));
                                         break;
                                     case "receive-broadcast-can-control-content-message":
                                         r(),
                                             L.debug("can-control-content-message");
-                                        var ve = a.data
-                                            , Se = ve.flag
-                                            , Me = ve.peerName
-                                            , we = ve.displayName;
+                                        var Me = a.data
+                                            , we = Me.flag
+                                            , Ce = Me.peerName
+                                            , Be = Me.displayName;
                                         e._dispatch(g.setMembersCanControlContent({
-                                            flag: Se,
-                                            peerName: Me,
-                                            displayName: we
+                                            flag: we,
+                                            peerName: Ce,
+                                            displayName: Be
                                         })),
-                                            Me === e._peerName && (e._dispatch(g.setCanControlContent(Se)),
-                                                Se && e._dispatch(g.setRequestContentControl(!1)));
+                                            Ce === e._peerName && (e._dispatch(g.setCanControlContent(we)),
+                                                we && e._dispatch(g.setRequestContentControl(!1)));
                                         break;
                                     case "receive-broadcast-kick-member-off":
                                         r(),
                                             L.debug("receive-broadcast-kick-member-off");
-                                        var Ce = a.data
-                                            , Be = Ce.peerName;
-                                        Ce.displayName;
-                                        if (Be === e._peerName) {
+                                        var _e = a.data
+                                            , Pe = _e.peerName;
+                                        _e.displayName;
+                                        if (Pe === e._peerName) {
                                             e._dispatch(k.wsAuthKickedOff()),
                                                 e._dispatch(p.notify({
                                                     type: "error",
                                                     text: "已被管理员移出房间！"
                                                 }));
-                                            //修改过的代码：被踢不会有三天内禁止进入的限制。
-                                            //var _e = (0,
-                                            //    P.default)().add(72, "hours");
-                                            //localStorage.setItem(T.localStorage.kickMemberExpire, _e),
-                                            //    "teacher" === e._peerRole && e.RoomLeave(),
-                                            //    e.close(),
-                                            //    setTimeout(function () {
-                                            //        window.location.href = "/"
-                                            //    }, 2e3)
+                                            //修改过的代码：被踢不会有三天内禁止进入的限制。   
+                                            // var Re = (0,
+                                            //     P.default)().add(72, "hours");
+                                            // localStorage.setItem(T.localStorage.kickMemberExpire, Re),
+                                            //     "teacher" === e._peerRole && e.RoomLeave(),
+                                            //     e.close(),
+                                            //     setTimeout(function () {
+                                            //         window.location.href = "/"
+                                            //     }, 2e3)
                                         }
+                                        break;
+                                    case "change-video-status":
+                                        r();
+                                        var De = a.data;
+                                        e._videoFlag = De.allVideoDisabled;
+                                        break;
+                                    case "change-audio-status":
+                                        r();
+                                        var Te = a.data;
+                                        e._audioFlag = Te.allAudioMute;
                                         break;
                                     case "member-role-changed":
                                         r(),
-                                            L.debug("member-role-changed");
-                                        var Pe = a.data
-                                            , Re = Pe.peerName
-                                            , De = Pe.role;
-                                        Pe.displayName;
-                                        e._peerName === Re ? e.updateMineRole(De) : (e._dispatch(g.memberRoleChanged({
-                                            peerName: Re,
-                                            role: De
+                                            L.debug("member-role-changed"),
+                                            "teacher" !== e._peerRole && "tutor" !== e._peerRole && (e._dispatch(g.changeVideoFlag({
+                                                allVideoDisabled: !0
+                                            })),
+                                                e._dispatch(g.changeAudioFlag({
+                                                    allAudioMute: !0
+                                                })));
+                                        var Le = a.data
+                                            , Ee = Le.peerName
+                                            , ze = Le.role;
+                                        Le.displayName;
+                                        e._peerName === Ee ? e.updateMineRole(ze) : (e._dispatch(g.memberRoleChanged({
+                                            peerName: Ee,
+                                            role: ze
                                         })),
-                                            "student" === De ? e._addPeerVideoView(a.data) : e._removePeerVideoView(Re));
+                                            "student" === ze ? e._addPeerVideoView(a.data) : e._removePeerVideoView(Ee));
                                         break;
                                     default:
                                         L.error('unknown protoo method "%s"', a.method),
@@ -5495,8 +5672,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         loop: !1,
                         isRecording: t.localRecordStatus,
                         isLive: t.liveStatus,
-                        allAudioMute: !0,
-                        allVideoDisabled: !0,
+                        allAudioMute: t.allAudioMute,
+                        allVideoDisabled: t.allVideoDisabled,
                         timer: null,
                         memberArr: [],
                         power: !1
@@ -5648,6 +5825,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     className: this.props.sign.visible ? "icon-sign" : "icon-notsign",
                                     title: "签到",
                                     onClick: this.signInClick.bind(this)
+                                }) : null, "teacher" == r.role ? c.default.createElement("div", {
+                                    className: this.props.room.doubleFlag ? "icon-notdouble" : "icon-double",
+                                    title: "双屏",
+                                    onClick: this.doubleInClick.bind(this)
                                 }) : null, c.default.createElement("div", {
                                     className: "icon",
                                     onClick: this.handleMinOrMaxStyle.bind(this),
@@ -5688,11 +5869,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         }, c.default.createElement(C.default, {
                                             liveing: this.state.isLive
                                         })) : null, "teacher" == r.role || "tutor" == r.role ? c.default.createElement("div", {
-                                            className: this.state.allAudioMute ? "icon-all-mute" : "icon-all-mute-true",
+                                            className: n.allAudioMute ? "icon-all-mute" : "icon-all-mute-true",
                                             title: "全部静音",
                                             onClick: this.handleOnHandAllMute.bind(this)
                                         }, i) : null, "teacher" == r.role || "tutor" == r.role ? c.default.createElement("div", {
-                                            className: this.state.allVideoDisabled ? "icon-all-video-disabled" : "icon-all-video-disabled-true",
+                                            className: n.allVideoDisabled ? "icon-all-video-disabled" : "icon-all-video-disabled-true",
                                             title: "全部禁视",
                                             onClick: this.handleOnHandAllVideo.bind(this)
                                         }, l) : null)), c.default.createElement("div", {
@@ -5910,27 +6091,39 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "handleOnHandAllMute",
                             value: function () {
                                 var e = this
-                                    , a = !this.state.allAudioMute;
+                                    , a = !this.props.room.allAudioMute;
                                 this.setState({
                                     allAudioMute: a
                                 }),
                                     (0,
                                         t.default)(this.props.members.students).forEach(function (r) {
                                             e.props.onWebcamAudioPeer("audio", e.props.members.students[r].peerName, a)
-                                        })
+                                        }),
+                                    this.props.changeAudio({
+                                        allAudioMute: a
+                                    }),
+                                    this.props.changeAudioFlag({
+                                        allAudioMute: a
+                                    })
                             }
                         }, {
                             key: "handleOnHandAllVideo",
                             value: function () {
                                 var e = this
-                                    , a = !this.state.allVideoDisabled;
+                                    , a = !this.props.room.allVideoDisabled;
                                 this.setState({
                                     allVideoDisabled: a
                                 }),
                                     (0,
                                         t.default)(this.props.members.students).forEach(function (r) {
                                             e.props.onWebcamAudioPeer("video", e.props.members.students[r].peerName, a)
-                                        })
+                                        }),
+                                    this.props.changeVideo({
+                                        allVideoDisabled: a
+                                    }),
+                                    this.props.changeVideoFlag({
+                                        allVideoDisabled: a
+                                    })
                             }
                         }, {
                             key: "componentWillReceiveProps",
@@ -6020,8 +6213,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             value: function (e) {
                                 var a = this.props
                                     , r = a.roomStart
-                                    , n = a.roomLeave;
-                                if (a.course.status) {
+                                    , n = a.roomLeave
+                                    , t = a.course
+                                    , o = a.changeDoubleFlag;
+                                if (t.status) {
                                     clearInterval(this.state.timer),
                                         this.setState({
                                             loop: !1,
@@ -6035,6 +6230,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     this.props.allList([]),
                                         this.props.changeSignVisiblityState(!1),
                                         this.props.changeSignVisiblity(!1),
+                                        this.props.endDoubleFlag(),
+                                        o({
+                                            doubleFlag: !1
+                                        }),
                                         this.state.isRecording && this.handleChangeRecordStatus(),
                                         n()
                                 } else
@@ -6130,6 +6329,26 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     this.props.changeSignVisiblityState(!0)) : e("请先开始上课")
                             }
                         }, {
+                            key: "doubleInClick",
+                            value: function () {
+                                var e = this.props
+                                    , a = e.notify
+                                    , r = e.changeDoubleFlag
+                                    , n = e.sendRoute
+                                    , o = e.queryRoomData;
+                                this.props.courseStarted ? this.props.room.doubleFlag ? (o(),
+                                    this.props.endDoubleFlag(),
+                                    r({
+                                        doubleFlag: !1
+                                    }),
+                                    n(this.props.room.leftUrl)) : ("/room" == this.props.routes ? this.props.startDoubleFlag("/room/canvas", "/room/contentPeerView/" + (0,
+                                        t.default)(this.props.members.teachers)[0]) : this.props.routes.search("contentPeerView") >= 0 ? this.props.startDoubleFlag("/room/canvas", this.props.routes) : "/room" != this.props.routes && this.props.routes.search("contentPeerView") < 0 && this.props.startDoubleFlag(this.props.routes, "/room/contentPeerView/" + (0,
+                                            t.default)(this.props.members.teachers)[0]),
+                                        r({
+                                            doubleFlag: !0
+                                        })) : a("请先开始上课")
+                            }
+                        }, {
                             key: "onTestPageDismiss",
                             value: function () {
                                 var e = this;
@@ -6198,106 +6417,112 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         }, {
                             key: "handleOnLoop",
                             value: function () {
-                                var e = this
-                                    , a = !0;
-                                if (this.state.loop)
-                                    this.stoploop();
-                                else {
-                                    this.setState({
-                                        loop: !this.state.loop
-                                    });
-                                    var r = 0
-                                        , n = ""
-                                        , t = !1
-                                        , o = 0
-                                        , i = 0
-                                        , l = this.props.studentMembers.concat(this.props.visitorMembers);
-                                    l.length;
-                                    this.sortMember(l),
-                                        sessionStorage.setItem(z.sessionStorage.loopflag, "2"),
+                                var e = this;
+                                if (0 != this.props.room.allVideoDisabled) {
+                                    var a = !0;
+                                    if (this.state.loop)
+                                        this.stoploop();
+                                    else {
                                         this.setState({
-                                            timer: setInterval(function () {
-                                                if (1 == e.props.studentMembers.length && n == e.props.studentMembers[0].peerName) {
-                                                    var s = e.props.studentMembers.concat(e.props.visitorMembers);
-                                                    e.sortMember(s),
-                                                        0;
-                                                    for (var u = 0; u < s.length; u++)
-                                                        if ("visitor" == s[u].role) {
-                                                            e.props.changeMemberRole(s[u].peerName, s[u].peerName, "student");
-                                                            break
-                                                        }
-                                                }
-                                                if (i != e.props.closenum && (i = e.props.closenum,
-                                                    l = e.props.studentMembers.concat(e.props.visitorMembers),
-                                                    l.length,
-                                                    e.sortMember(l),
-                                                    0),
-                                                    0 != e.props.visitorMembers.length)
-                                                    if (e.props.studentMembers.length,
-                                                        88 == o && (l = e.props.studentMembers.concat(e.props.visitorMembers),
-                                                            l.length,
-                                                            o = 0,
-                                                            e.sortMember(l)),
-                                                        a && "visitor" == l[0].role) {
-                                                        for (var c = 0; c < l.length; c++)
-                                                            if ("student" == l[c].role) {
-                                                                e.props.changeMemberRole(l[0].peerName, l[0].peerName, "student");
+                                            loop: !this.state.loop
+                                        });
+                                        var r = 0
+                                            , n = ""
+                                            , t = !1
+                                            , o = 0
+                                            , i = 0
+                                            , l = this.props.studentMembers.concat(this.props.visitorMembers);
+                                        l.length;
+                                        this.sortMember(l),
+                                            sessionStorage.setItem(z.sessionStorage.loopflag, "2"),
+                                            this.setState({
+                                                timer: setInterval(function () {
+                                                    if (1 == e.props.studentMembers.length && n == e.props.studentMembers[0].peerName) {
+                                                        var s = e.props.studentMembers.concat(e.props.visitorMembers);
+                                                        e.sortMember(s),
+                                                            0;
+                                                        for (var u = 0; u < s.length; u++)
+                                                            if ("visitor" == s[u].role) {
+                                                                e.props.changeMemberRole(s[u].peerName, s[u].peerName, "student");
                                                                 break
                                                             }
-                                                    } else {
-                                                        a = !1;
-                                                        for (var d = 0; d < l.length; d++) {
-                                                            if ("student" == l[d].role) {
-                                                                if ((e.props.studentMembers.length = 1) && 0,
-                                                                    r > 0) {
-                                                                    0 == --r && (o = 88);
-                                                                    for (var h = 0; h < l.length; h++)
-                                                                        if ("visitor" == l[h].role) {
-                                                                            e.props.changeMemberRole(l[h].peerName, l[h].peerName, "student"),
-                                                                                1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName);
-                                                                            break
-                                                                        }
-                                                                } else if (d == l.length - 1) {
-                                                                    for (var m = 0; m < l.length; m++)
-                                                                        if ("visitor" == l[m].role) {
-                                                                            e.props.changeMemberRole(l[m].peerName, l[m].peerName, "student"),
-                                                                                1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName);
-                                                                            break
-                                                                        }
-                                                                } else {
-                                                                    for (var f = d; f < l.length; f++)
-                                                                        if (f == l.length - 1) {
-                                                                            if ("visitor" == l[f].role) {
-                                                                                e.props.changeMemberRole(l[f].peerName, l[f].peerName, "student"),
-                                                                                    1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName),
-                                                                                    t = !0;
-                                                                                break
-                                                                            }
-                                                                        } else if ("visitor" == l[f].role) {
-                                                                            e.props.changeMemberRole(l[f].peerName, l[f].peerName, "student"),
-                                                                                1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName),
-                                                                                t = !0;
-                                                                            for (var p = f + 1; p < l.length; p++)
-                                                                                "visitor" == l[p].role && (t = !1);
-                                                                            break
-                                                                        }
-                                                                    if (t) {
-                                                                        r = 0;
-                                                                        for (var g = d; g < l.length; g++)
-                                                                            "student" == l[g].role && r++
-                                                                    }
-                                                                }
-                                                                return
-                                                            }
-                                                            d == l.length - 1 && (e.props.changeMemberRole(l[0].peerName, l[0].peerName, "student"),
-                                                                1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName))
-                                                        }
                                                     }
-                                                else
-                                                    e.stoploop()
-                                            }, 8e3)
-                                        })
-                                }
+                                                    if (i != e.props.closenum && (i = e.props.closenum,
+                                                        l = e.props.studentMembers.concat(e.props.visitorMembers),
+                                                        l.length,
+                                                        e.sortMember(l),
+                                                        0),
+                                                        0 != e.props.visitorMembers.length)
+                                                        if (0 != e.props.room.allVideoDisabled)
+                                                            if (e.props.studentMembers.length,
+                                                                88 == o && (l = e.props.studentMembers.concat(e.props.visitorMembers),
+                                                                    l.length,
+                                                                    o = 0,
+                                                                    e.sortMember(l)),
+                                                                a && "visitor" == l[0].role) {
+                                                                for (var c = 0; c < l.length; c++)
+                                                                    if ("student" == l[c].role) {
+                                                                        e.props.changeMemberRole(l[0].peerName, l[0].peerName, "student");
+                                                                        break
+                                                                    }
+                                                            } else {
+                                                                a = !1;
+                                                                for (var d = 0; d < l.length; d++) {
+                                                                    if ("student" == l[d].role) {
+                                                                        if ((e.props.studentMembers.length = 1) && 0,
+                                                                            r > 0) {
+                                                                            0 == --r && (o = 88);
+                                                                            for (var h = 0; h < l.length; h++)
+                                                                                if ("visitor" == l[h].role) {
+                                                                                    e.props.changeMemberRole(l[h].peerName, l[h].peerName, "student"),
+                                                                                        1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName);
+                                                                                    break
+                                                                                }
+                                                                        } else if (d == l.length - 1) {
+                                                                            for (var m = 0; m < l.length; m++)
+                                                                                if ("visitor" == l[m].role) {
+                                                                                    e.props.changeMemberRole(l[m].peerName, l[m].peerName, "student"),
+                                                                                        1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName);
+                                                                                    break
+                                                                                }
+                                                                        } else {
+                                                                            for (var f = d; f < l.length; f++)
+                                                                                if (f == l.length - 1) {
+                                                                                    if ("visitor" == l[f].role) {
+                                                                                        e.props.changeMemberRole(l[f].peerName, l[f].peerName, "student"),
+                                                                                            1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName),
+                                                                                            t = !0;
+                                                                                        break
+                                                                                    }
+                                                                                } else if ("visitor" == l[f].role) {
+                                                                                    e.props.changeMemberRole(l[f].peerName, l[f].peerName, "student"),
+                                                                                        1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName),
+                                                                                        t = !0;
+                                                                                    for (var p = f + 1; p < l.length; p++)
+                                                                                        "visitor" == l[p].role && (t = !1);
+                                                                                    break
+                                                                                }
+                                                                            if (t) {
+                                                                                r = 0;
+                                                                                for (var g = d; g < l.length; g++)
+                                                                                    "student" == l[g].role && r++
+                                                                            }
+                                                                        }
+                                                                        return
+                                                                    }
+                                                                    d == l.length - 1 && (e.props.changeMemberRole(l[0].peerName, l[0].peerName, "student"),
+                                                                        1 == e.props.studentMembers.length && (n = e.props.studentMembers[0].peerName))
+                                                                }
+                                                            }
+                                                        else
+                                                            e.stoploop();
+                                                    else
+                                                        e.stoploop()
+                                                }, 3e4)
+                                            })
+                                    }
+                                } else
+                                    this.props.notify("全体禁视状态下不可进行轮巡")
                             }
                         }, {
                             key: "handleChangeLocalRecordStats",
@@ -6416,6 +6641,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 {
                     wsServer: e.wsServer,
                     me: e.me,
+                    routes: e.routes.url,
                     room: e.room,
                     course: e.course,
                     test: e.test,
@@ -6561,6 +6787,48 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     },
                     allList: function (a) {
                         return e(S.allList(a))
+                    },
+                    changeDoubleFlag: function (a) {
+                        var r = a.doubleFlag;
+                        return e(b.changeDoubleFlag({
+                            doubleFlag: r
+                        }))
+                    },
+                    changeAudio: function (a) {
+                        var r = a.allAudioMute;
+                        return e(b.changeAudio({
+                            allAudioMute: r
+                        }))
+                    },
+                    changeVideo: function (a) {
+                        var r = a.allVideoDisabled;
+                        return e(b.changeVideo({
+                            allVideoDisabled: r
+                        }))
+                    },
+                    changeAudioFlag: function (a) {
+                        var r = a.allAudioMute;
+                        return e(b.changeAudioFlag({
+                            allAudioMute: r
+                        }))
+                    },
+                    changeVideoFlag: function (a) {
+                        var r = a.allVideoDisabled;
+                        return e(b.changeVideoFlag({
+                            allVideoDisabled: r
+                        }))
+                    },
+                    startDoubleFlag: function (a, r) {
+                        return e(b.startDoubleFlag({
+                            leftUrl: a,
+                            rightUrl: r
+                        }))
+                    },
+                    endDoubleFlag: function () {
+                        return e(b.endDoubleFlag())
+                    },
+                    sendRoute: function (a) {
+                        return e(M.sendRoute(a))
                     }
                 }
             })(H)
@@ -7760,7 +8028,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }, {
                         key: "componentWillReceiveProps",
                         value: function (e) {
-                            this._tooltip && e.me.displayNameSet && d.default.hide(this._rootNode)
+                            this._tooltip && e.me.displayNameSet && d.default.hide(this._rootNode),
+                                this.props.room.allAudioMute != e.room.allAudioMute && this.props.room.allAudioMute && "teacher" != this.props.me.role && this.props.muteMic(),
+                                this.props.room.allVideoDisabled != e.room.allVideoDisabled && this.props.room.allVideoDisabled && "teacher" != this.props.me.role && this.props.disableWebcam()
                         }
                     }]),
                 a
@@ -7791,7 +8061,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     connected: "connected" === e.room.state,
                     me: e.me,
                     micProducer: r,
-                    webcamProducer: t
+                    webcamProducer: t,
+                    room: e.room
                 }
             }, function (e) {
                 return {
@@ -7801,11 +8072,17 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     onMuteMic: function () {
                         return e(g.muteMic())
                     },
+                    muteMic: function () {
+                        return e(g.muteMic())
+                    },
                     onUnmuteMic: function () {
                         return e(g.unmuteMic())
                     },
                     onEnableWebcam: function () {
                         return e(g.enableWebcam())
+                    },
+                    disableWebcam: function () {
+                        return e(g.disableWebcam())
                     },
                     onDisableWebcam: function () {
                         return e(g.disableWebcam())
@@ -8023,6 +8300,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "handleMoveMemberToStudent",
                             value: function (e) {
                                 //修改过的代码。
+                                if (0 == this.props.room.allAudioMute || 0 == this.props.room.allVideoDisabled) {
+                                    this.props.notifyWarn("禁音禁视状态下不可以进行切换");
+                                    return;
+                                }
                                 if (2 == sessionStorage.getItem(p.default.sessionStorage.loopflag)) {
                                     this.props.notifyWarn("请先停止轮巡或刷新网页,再进行切换");
                                     return;
@@ -8041,9 +8322,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     this.props.changeMemberRole(e.peerName, e.displayName, "student");
                                     b.debug("handleMoveMemberToStudent");
                                 }
-                                //2 == sessionStorage.getItem(p.default.sessionStorage.loopflag) ? this.props.notifyWarn("请先停止轮巡或刷新网页,再进行切换") : "student" == e.role ? this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToVisitor"),
-                                //    this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : b.debug("handleMoveMemberToVisitor but has no permission") : "visitor" == e.role && (this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToStudent"),
-                                //        this.props.changeMemberRole(e.peerName, e.displayName, "student")) : b.debug("handleMoveMemberToStudent but has no permission"))
+                                // 0 != this.props.room.allAudioMute || 0 != this.props.room.allVideoDisabled ? 2 == sessionStorage.getItem(p.default.sessionStorage.loopflag) ? this.props.notifyWarn("请先停止轮巡或刷新网页,再进行切换") : "student" == e.role ? this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToVisitor"),
+                                //     this.props.changeMemberRole(e.peerName, e.displayName, "visitor")) : b.debug("handleMoveMemberToVisitor but has no permission") : "visitor" == e.role && (this.props.me.defaultCanControlContent ? (b.debug("handleMoveMemberToStudent"),
+                                //         this.props.changeMemberRole(e.peerName, e.displayName, "student")) : b.debug("handleMoveMemberToStudent but has no permission")) : this.props.notifyWarn("禁音禁视状态下不可以进行切换")
                             }
                         }, {
                             key: "exportCsv",
@@ -8173,6 +8454,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             type: "error",
                             text: a
                         }))
+                    },
+                    onWebcamAudioPeer: function (a, r, n) {
+                        return e(f.webcamAudioPeer(a, r, n))
                     }
                 }
             })(k)
@@ -8918,27 +9202,28 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         Object.defineProperty(r, "__esModule", {
             value: !0
         });
-        var n = k(e("babel-runtime/core-js/json/stringify"))
-            , t = k(e("babel-runtime/core-js/object/get-prototype-of"))
-            , o = k(e("babel-runtime/helpers/classCallCheck"))
-            , i = k(e("babel-runtime/helpers/createClass"))
-            , l = k(e("babel-runtime/helpers/possibleConstructorReturn"))
-            , s = k(e("babel-runtime/helpers/inherits"))
-            , u = k(e("react"))
+        var n = v(e("babel-runtime/core-js/json/stringify"))
+            , t = v(e("babel-runtime/core-js/object/get-prototype-of"))
+            , o = v(e("babel-runtime/helpers/classCallCheck"))
+            , i = v(e("babel-runtime/helpers/createClass"))
+            , l = v(e("babel-runtime/helpers/possibleConstructorReturn"))
+            , s = v(e("babel-runtime/helpers/inherits"))
+            , u = v(e("react"))
             , c = e("react-redux")
-            , d = k(e("classnames"))
-            , h = k(e("axios"))
-            , m = (k(e("url-parse")),
+            , d = v(e("classnames"))
+            , h = v(e("axios"))
+            , m = (v(e("url-parse")),
                 e("react-router"))
-            , f = (k(e("is-electron")),
-                b(e("../redux/routeActions")))
-            , p = b(e("../redux/fileActions"))
-            , g = (b(e("../redux/canvasAction")),
-                b(e("../redux/requestActions")))
-            , y = (b(e("./appPropTypes")),
+            , f = (v(e("is-electron")),
+                k(e("../redux/routeActions")))
+            , p = k(e("../redux/fileActions"))
+            , g = k(e("../redux/stateActions"))
+            , y = (k(e("../redux/canvasAction")),
+                k(e("../redux/requestActions")))
+            , b = (k(e("./appPropTypes")),
                 e("react-device-detect"),
-                k(e("../../config")));
-        function b(e) {
+                v(e("../../config")));
+        function k(e) {
             if (e && e.__esModule)
                 return e;
             var a = {};
@@ -8948,13 +9233,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             return a.default = e,
                 a
         }
-        function k(e) {
+        function v(e) {
             return e && e.__esModule ? e : {
                 default: e
             }
         }
-        var v = new (k(e("../Logger")).default)("nav")
-            , S = function (e) {
+        var S = new (v(e("../Logger")).default)("nav")
+            , M = function (e) {
                 function a(e) {
                     (0,
                         o.default)(this, a);
@@ -8989,7 +9274,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             value: function () {
                                 var e = this
                                     , a = this.props.courseStarted
-                                    , r = sessionStorage.getItem(y.default.sessionStorage.serverRecord);
+                                    , r = sessionStorage.getItem(b.default.sessionStorage.serverRecord);
                                 return u.default.createElement("div", {
                                     "data-component": "Nav",
                                     className: this.state.maxOrMinClass,
@@ -9148,9 +9433,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "handleClick",
                             value: function (e, a) {
                                 var r = this.props
-                                    , n = r.sendRoute;
-                                r.isTeacher;
-                                this.state.permissionSendRouteData && n(a)
+                                    , n = r.sendRoute
+                                    , t = (r.isTeacher,
+                                        r.DoubleLeft);
+                                if (1 == this.props.courseStarted && !this.state.permissionSendRouteData)
+                                    return e.preventDefault(),
+                                        void this.props.notifyWarn("当前没有操作权限，请举手申请");
+                                n(a),
+                                    t(a)
                             }
                         }, {
                             key: "handleClickvideo",
@@ -9209,8 +9499,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     , a = this.props.room.accessToken
                                     , r = this.props.room.roomId;
                                 if (!a || !r)
-                                    return m.hashHistory.push(y.default.router.login);
-                                h.default.get(y.default.api.server + "/api/room/" + r + "/source?token=" + a).then(function (a) {
+                                    return m.hashHistory.push(b.default.router.login);
+                                h.default.get(b.default.api.server + "/api/room/" + r + "/source?token=" + a).then(function (a) {
                                     var r = a.data;
                                     if (0 == r.code)
                                         e.setState({
@@ -9220,13 +9510,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         });
                                     else {
                                         if (1002 == r.code)
-                                            return m.hashHistory.push(y.default.router.login);
+                                            return m.hashHistory.push(b.default.router.login);
                                         console.log(r.message)
                                     }
                                 }).catch(function (e) {
                                     console.log(e)
                                 }),
-                                    h.default.get(y.default.api.server + "/api/vvodlists?room_id=" + r + "&token=" + a).then(function (a) {
+                                    h.default.get(b.default.api.server + "/api/vvodlists?room_id=" + r + "&token=" + a).then(function (a) {
                                         var r = a.data;
                                         if (0 == r.code)
                                             r.data.demand.forEach(function (e, a) {
@@ -9237,7 +9527,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                                 });
                                         else {
                                             if (1002 == r.code)
-                                                return m.hashHistory.push(y.default.router.login);
+                                                return m.hashHistory.push(b.default.router.login);
                                             console.log(r.message)
                                         }
                                     }).catch(function (e) {
@@ -9253,18 +9543,18 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     return alert("容量不足");
                                 var a = this.props.room.roomId;
                                 if (!a)
-                                    return m.hashHistory.push(y.default.router.login);
+                                    return m.hashHistory.push(b.default.router.login);
                                 var r = new FormData
                                     , n = e.target.files[0];
                                 if (n.size > 209715200)
                                     this.props.notify("文件大小不能超过200MB");
                                 else {
-                                    v.debug("upload file, filesize: %d", n.size),
+                                    S.debug("upload file, filesize: %d", n.size),
                                         r.append("file", n),
                                         this.setState({
                                             uploading: !0
                                         });
-                                    var t = y.default.api.server + "/api/room/" + a + "/upload";
+                                    var t = b.default.api.server + "/api/room/" + a + "/upload";
                                     this.uploadFile(t, r)
                                 }
                             }
@@ -9290,7 +9580,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         r.setState({
                                             uploading: !1
                                         }),
-                                            v.debug("upload result %o", e.data),
+                                            S.debug("upload result %o", e.data),
                                             0 == a.code ? (n(a.data),
                                                 r.setState(function (e) {
                                                     return {
@@ -9325,17 +9615,18 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     });
                                     var o = this.props.room.accessToken;
                                     if (!o)
-                                        return m.hashHistory.push(y.default.router.login);
-                                    h.default.get(y.default.api.server + "/api/source/" + a + "/delete?token=" + o).then(function (e) {
+                                        return m.hashHistory.push(b.default.router.login);
+                                    h.default.get(b.default.api.server + "/api/source/" + a + "/delete?token=" + o).then(function (e) {
                                         var r = e.data;
                                         if (0 == r.code) {
-                                            var o = y.default.router.room;
+                                            var o = b.default.router.room;
                                             return n(o),
+                                                DoubleLeft(o),
                                                 t(a),
                                                 m.hashHistory.push(o)
                                         }
                                         if (1002 == r.code)
-                                            return m.hashHistory.push(y.default.router.login);
+                                            return m.hashHistory.push(b.default.router.login);
                                         console.log(r.message)
                                     }).catch(function (e) {
                                         console.log(e)
@@ -9376,7 +9667,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         return e(p.deleteFile(a))
                     },
                     notify: function (a) {
-                        return e(g.notify({
+                        return e(y.notify({
+                            type: "error",
+                            text: a
+                        }))
+                    },
+                    notifyWarn: function (a) {
+                        return e(y.notify({
                             type: "error",
                             text: a
                         }))
@@ -9386,9 +9683,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     },
                     setChatRoomVis: function (a) {
                         return e(f.chatRoom(a))
+                    },
+                    DoubleLeft: function (a) {
+                        return e(g.DoubleLeft({
+                            leftUrl: a
+                        }))
                     }
                 }
-            })(S)
+            })(M)
     }
         , {
         "../../config": 1,
@@ -9397,6 +9699,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         "../redux/fileActions": 44,
         "../redux/requestActions": 75,
         "../redux/routeActions": 77,
+        "../redux/stateActions": 80,
         "./appPropTypes": 37,
         axios: 93,
         "babel-runtime/core-js/json/stringify": 121,
@@ -10146,22 +10449,26 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 var a = this.props
                                     , r = a.showPeerInContent
                                     , n = a.sendRoute
-                                    , t = a.isTeacher
-                                    , o = a.courseStarted;
-                                if (t && o)
+                                    , t = a.DoubleRight
+                                    , o = a.isTeacher
+                                    , i = a.courseStarted;
+                                if (o && i)
                                     if (e !== this.props.peerInContent) {
-                                        var i = "/room/contentPeerView/" + e;
+                                        var l = "/room/contentPeerView/" + e;
                                         if (this.props.peerInContent)
                                             r(e, null);
                                         else
                                             r(e, b.hashHistory.getCurrentLocation().pathname);
-                                        b.hashHistory.replace(i),
-                                            t && n(i)
+                                        b.hashHistory.replace(l),
+                                            o && (n(l),
+                                                t(l))
                                     } else {
-                                        var l = this.props.preLocation ? this.props.preLocation : M.router.room;
+                                        var s = this.props.preLocation ? this.props.preLocation : M.router.room;
                                         r(null, null),
-                                            b.hashHistory.replace(l),
-                                            t && n(l)
+                                            this.props.room.doubleFlag ? b.hashHistory.replace(this.props.room.leftUrl) : b.hashHistory.replace(s),
+                                            o && (this.props.room.doubleFlag ? (n(this.props.room.leftUrl),
+                                                n("/room/contentPeerView/xxxxxxx")) : (n(s),
+                                                    t("/room/contentPeerView/xxxxxxx")))
                                     }
                             }
                         }, {
@@ -10246,7 +10553,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     peerInContent: e.contentPeer.peerName,
                     preLocation: e.contentPeer.preLocation,
                     isTeacher: "teacher" === e.me.role || "tutor" === e.me.role,
-                    courseStarted: e.course.status
+                    courseStarted: e.course.status,
+                    room: e.room
                 }
             }, function (e) {
                 return {
@@ -10255,6 +10563,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     },
                     showPeerInContent: function (a, r) {
                         return e(p.showPeerInContent(a, r))
+                    },
+                    DoubleRight: function (a) {
+                        return e(p.DoubleRight({
+                            rightUrl: a
+                        }))
                     }
                 }
             })(C)
@@ -10761,196 +11074,267 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 path: H.default.router.music,
                 component: B.default
             }))
-            , F = function (e) {
-                function a(e) {
-                    (0,
-                        i.default)(this, a);
-                    var r = (0,
-                        s.default)(this, (a.__proto__ || (0,
-                            o.default)(a)).call(this, e))
-                        , n = r.props;
-                    n.connected,
-                        n.room,
-                        n.me,
-                        n.skins,
-                        n.amActiveSpeaker,
-                        n.onSetAudioMode,
-                        n.onRestartIce,
-                        n.peers,
-                        n.teacher,
-                        n.course,
-                        n.students;
-                    return r.state = {
-                        bottomHeight: 210,
-                        isRight: !0,
-                        isBottomPeers: !0,
-                        studentNumber: 0,
-                        peersAreaSize: {
-                            width: 4e3,
-                            height: 210
-                        },
-                        peerSize: {
-                            width: 245,
-                            height: 210
-                        },
-                        currPeerSize: {
-                            width: 245,
-                            height: 210
-                        },
-                        lineNumber: 0,
-                        currLineNumber: 0,
-                        lines: 1,
-                        changeSizeState: 0,
-                        needWidth: 0,
-                        realTimeWidth: 0
+            , F = c.default.createElement(E.Router, {
+                history: E.hashHistory
+            }, c.default.createElement(E.Route, {
+                path: H.default.router.canvas,
+                component: S.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.screenSharing,
+                component: T.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.video,
+                component: w.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.lookVideo,
+                component: C.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.ppt,
+                component: M.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.htmlPPt,
+                component: R.default
+            }), c.default.createElement(E.Route, {
+                path: H.default.router.music,
+                component: B.default
+            }));
+        console.log(E.hashHistory);
+        var N = function (e) {
+            function a(e) {
+                (0,
+                    i.default)(this, a);
+                var r = (0,
+                    s.default)(this, (a.__proto__ || (0,
+                        o.default)(a)).call(this, e));
+                r.fullScreen = !1;
+                var n = r.props;
+                n.connected,
+                    n.room,
+                    n.me,
+                    n.skins,
+                    n.amActiveSpeaker,
+                    n.onSetAudioMode,
+                    n.onRestartIce,
+                    n.peers,
+                    n.teacher,
+                    n.course,
+                    n.students;
+                return r.state = {
+                    bottomHeight: 210,
+                    isRight: !0,
+                    isBottomPeers: !0,
+                    studentNumber: 0,
+                    peersAreaSize: {
+                        width: 4e3,
+                        height: 210
                     },
-                        r
-                }
-                return (0,
-                    u.default)(a, e),
-                    (0,
-                        l.default)(a, [{
-                            key: "render",
-                            value: function () {
-                                var e = {
+                    peerSize: {
+                        width: 245,
+                        height: 210
+                    },
+                    currPeerSize: {
+                        width: 245,
+                        height: 210
+                    },
+                    lineNumber: 0,
+                    currLineNumber: 0,
+                    lines: 1,
+                    changeSizeState: 0,
+                    needWidth: 0,
+                    realTimeWidth: 0
+                },
+                    r
+            }
+            return (0,
+                u.default)(a, e),
+                (0,
+                    l.default)(a, [{
+                        key: "render",
+                        value: function () {
+                            var e = this
+                                , a = {
                                     height: this.state.bottomHeight + "px"
                                 };
-                                return c.default.createElement(g.Appear, {
-                                    duration: 100
-                                }, c.default.createElement("div", {
-                                    id: "room",
-                                    className: this.props.skins.name ? this.props.skins.name : "default"
-                                }, c.default.createElement(k.default, null), c.default.createElement(_.default, null), c.default.createElement(v.default, null), c.default.createElement("div", {
-                                    className: "content"
-                                }, c.default.createElement("div", {
-                                    className: "left"
-                                }, c.default.createElement("div", {
-                                    className: "top"
-                                }, x), this.props.students.length > 1 ? c.default.createElement("div", {
-                                    className: "mid"
-                                }, this.state.isBottomPeers ? c.default.createElement("img", {
-                                    src: "./resources/images/arrow_down.svg",
-                                    onClick: this.changeBottomStatus.bind(this)
-                                }) : c.default.createElement("img", {
-                                    src: "./resources/images/arrow_up.svg",
-                                    onClick: this.changeBottomStatus.bind(this)
-                                })) : null, c.default.createElement("div", {
-                                    ref: "peersNode",
-                                    style: e,
-                                    className: (0,
-                                        f.default)("bottom", {
-                                            h0: !this.state.isBottomPeers
-                                        })
-                                }, this.props.students.length > 1 ? c.default.createElement(y.default, null) : null)), c.default.createElement("div", {
-                                    className: "mid"
-                                }, this.state.isRight ? c.default.createElement("img", {
-                                    src: "./resources/images/arrow_right.svg",
-                                    onClick: this.changeRightStatus.bind(this)
-                                }) : c.default.createElement("img", {
-                                    src: "./resources/images/arrow_left.svg",
-                                    onClick: this.changeRightStatus.bind(this)
-                                })), c.default.createElement("div", {
-                                    className: (0,
-                                        f.default)("right", {
-                                            w0: !this.state.isRight
-                                        })
-                                }, c.default.createElement("div", {
-                                    className: "top"
-                                }, c.default.createElement(b.default, null)), c.default.createElement("div", {
-                                    className: "bottom"
-                                }, c.default.createElement(D.default, null)))), c.default.createElement(h.default, {
-                                    effect: "solid",
-                                    delayShow: 100,
-                                    delayHide: 100
-                                })))
-                            }
-                        }, {
-                            key: "componentDidMount",
-                            value: function () {
-                                this.resizePeersAreaSize(),
-                                    window.addEventListener("resize", this.onWindowResize.bind(this))
-                            }
-                        }, {
-                            key: "componentWillUnmount",
-                            value: function () {
-                                window.removeEventListener("resize", this.onWindowResize.bind(this))
-                            }
-                        }, {
-                            key: "componentWillReceiveProps",
-                            value: function (e) {
-                                var a = this;
-                                setTimeout(function () {
-                                    a.resizePeersAreaSize()
-                                }, 100)
-                            }
-                        }, {
-                            key: "changeRightStatus",
-                            value: function (e) {
-                                var a = this;
-                                this.setState({
-                                    isRight: !this.state.isRight
-                                }),
-                                    setTimeout(function () {
-                                        a.tiggerWindowResize()
-                                    }, 100)
-                            }
-                        }, {
-                            key: "changeBottomStatus",
-                            value: function () {
-                                var e = this;
-                                this.setState({
-                                    isBottomPeers: !this.state.isBottomPeers
-                                }),
-                                    setTimeout(function () {
-                                        e.tiggerWindowResize()
-                                    }, 100)
-                            }
-                        }, {
-                            key: "resizePeersAreaSize",
-                            value: function () {
-                                if (this.state.isBottomPeers && void 0 !== this.refs.peersNode) {
-                                    var e = this.refs.peersNode.offsetWidth;
-                                    this.refs.peersNode.clientHeight;
-                                    !0 === this.props.course.status && this.props.students.length > 1 ? this.setState({
-                                        bottomHeight: e / 6 * .85
-                                    }) : this.setState({
-                                        bottomHeight: 0
-                                    }),
-                                        K.debug("resize peers area size")
+                            return c.default.createElement(g.Appear, {
+                                duration: 100
+                            }, c.default.createElement("div", {
+                                id: "room",
+                                className: this.props.skins.name ? this.props.skins.name : "default"
+                            }, c.default.createElement(k.default, null), c.default.createElement(_.default, null), c.default.createElement(v.default, null), c.default.createElement("div", {
+                                className: "content"
+                            }, c.default.createElement("div", {
+                                className: "left"
+                            }, this.props.room.doubleFlag ? c.default.createElement("div", {
+                                className: "top double",
+                                ref: function (a) {
+                                    e.doubleWapperNode = a,
+                                        e.caculatedMaxScale()
                                 }
+                            }, c.default.createElement("div", {
+                                className: "/room" != this.props.routes && "/screenSharing" != this.props.routes && "/music" != this.props.routes && this.props.routes.search("contentPeerView") < 0 ? "doublescreen" : "teacher" == this.props.me.role ? "doublescreen doublebg" : "doublescreen doublebgStu"
+                            }, F), c.default.createElement("div", {
+                                className: "teacher" == this.props.me.role ? "doublescreen doublescreen_right" : "doublescreen doublescreen_rightStu"
+                            }, c.default.createElement(E.Router, {
+                                history: E.hashHistory
+                            }, c.default.createElement(E.Route, {
+                                path: H.default.router.contentPeerView,
+                                component: L.default
+                            }))), c.default.createElement("div", {
+                                onClick: this.handleOnZoonMax.bind(this),
+                                className: "double_max"
+                            })) : c.default.createElement("div", {
+                                className: "top"
+                            }, x), this.props.students.length > 1 ? c.default.createElement("div", {
+                                className: "mid"
+                            }, this.state.isBottomPeers ? c.default.createElement("img", {
+                                src: "./resources/images/arrow_down.svg",
+                                onClick: this.changeBottomStatus.bind(this)
+                            }) : c.default.createElement("img", {
+                                src: "./resources/images/arrow_up.svg",
+                                onClick: this.changeBottomStatus.bind(this)
+                            })) : null, c.default.createElement("div", {
+                                ref: "peersNode",
+                                style: a,
+                                className: (0,
+                                    f.default)("bottom", {
+                                        h0: !this.state.isBottomPeers
+                                    })
+                            }, this.props.students.length > 1 ? c.default.createElement(y.default, null) : null)), c.default.createElement("div", {
+                                className: "mid"
+                            }, this.state.isRight ? c.default.createElement("img", {
+                                src: "./resources/images/arrow_right.svg",
+                                onClick: this.changeRightStatus.bind(this)
+                            }) : c.default.createElement("img", {
+                                src: "./resources/images/arrow_left.svg",
+                                onClick: this.changeRightStatus.bind(this)
+                            })), c.default.createElement("div", {
+                                className: (0,
+                                    f.default)("right", {
+                                        w0: !this.state.isRight
+                                    })
+                            }, c.default.createElement("div", {
+                                className: "top"
+                            }, c.default.createElement(b.default, null)), c.default.createElement("div", {
+                                className: "bottom"
+                            }, c.default.createElement(D.default, null)))), c.default.createElement(h.default, {
+                                effect: "solid",
+                                delayShow: 100,
+                                delayHide: 100
+                            })))
+                        }
+                    }, {
+                        key: "componentDidMount",
+                        value: function () {
+                            this.resizePeersAreaSize(),
+                                window.addEventListener("resize", this.onWindowResize.bind(this))
+                        }
+                    }, {
+                        key: "componentWillUnmount",
+                        value: function () {
+                            window.removeEventListener("resize", this.onWindowResize.bind(this))
+                        }
+                    }, {
+                        key: "componentWillReceiveProps",
+                        value: function (e) {
+                            var a = this;
+                            setTimeout(function () {
+                                a.resizePeersAreaSize()
+                            }, 100)
+                        }
+                    }, {
+                        key: "caculatedMaxScale",
+                        value: function () {
+                            if (this.imgNode && this.doubleWapperNode && this.canvasOriginWidth) {
+                                var e = this.doubleWapperNode.offsetWidth / this.canvasOriginWidth;
+                                1 != e && (e < 2 && (e = 2),
+                                    this._maxScale && this._maxScale > e || (this._maxScale = e))
                             }
-                        }, {
-                            key: "onWindowResize",
-                            value: function () {
-                                var e = this;
+                        }
+                    }, {
+                        key: "handleOnZoonMax",
+                        value: function (e) {
+                            this.doubleWapperNode && (this.fullScreen ? document.exitFullscreen ? (document.exitFullscreen(),
+                                this.fullScreen = !1) : document.mozCancelFullScreen ? (document.mozCancelFullScreen(),
+                                    this.fullScreen = !1) : document.webkitCancelFullScreen ? (document.webkitCancelFullScreen(),
+                                        this.fullScreen = !1) : document.msExitFullscreen && (document.msExitFullscreen(),
+                                            this.fullScreen = !1) : this.doubleWapperNode.requestFullscreen ? (this.doubleWapperNode.requestFullscreen(),
+                                                this.fullScreen = !0) : this.doubleWapperNode.mozRequestFullScreen ? (this.doubleWapperNode.mozRequestFullScreen(),
+                                                    this.fullScreen = !0) : this.doubleWapperNode.webkitRequestFullScreen ? (this.doubleWapperNode.webkitRequestFullScreen(),
+                                                        this.fullScreen = !0) : this.doubleWapperNode.msRequestFullscreen && (this.doubleWapperNode.msRequestFullscreen(),
+                                                            this.fullScreen = !0))
+                        }
+                    }, {
+                        key: "changeRightStatus",
+                        value: function (e) {
+                            var a = this;
+                            this.setState({
+                                isRight: !this.state.isRight
+                            }),
                                 setTimeout(function () {
-                                    e.resizePeersAreaSize()
-                                }, 200)
+                                    a.tiggerWindowResize()
+                                }, 100)
+                        }
+                    }, {
+                        key: "changeBottomStatus",
+                        value: function () {
+                            var e = this;
+                            this.setState({
+                                isBottomPeers: !this.state.isBottomPeers
+                            }),
+                                setTimeout(function () {
+                                    e.tiggerWindowResize()
+                                }, 100)
+                        }
+                    }, {
+                        key: "resizePeersAreaSize",
+                        value: function () {
+                            if (this.state.isBottomPeers && void 0 !== this.refs.peersNode) {
+                                var e = this.refs.peersNode.offsetWidth;
+                                this.refs.peersNode.clientHeight;
+                                !0 === this.props.course.status && this.props.students.length > 1 ? this.setState({
+                                    bottomHeight: e / 6 * .85
+                                }) : this.setState({
+                                    bottomHeight: 0
+                                }),
+                                    K.debug("resize peers area size")
                             }
-                        }, {
-                            key: "tiggerWindowResize",
-                            value: function () {
-                                var e = new Event("resize");
-                                window.dispatchEvent(e),
-                                    K.debug("-------------window resize!")
-                            }
-                        }]),
-                    a
-            }(c.default.Component);
-        F.propTypes = {
+                        }
+                    }, {
+                        key: "onWindowResize",
+                        value: function () {
+                            var e = this;
+                            setTimeout(function () {
+                                e.resizePeersAreaSize()
+                            }, 200)
+                        }
+                    }, {
+                        key: "tiggerWindowResize",
+                        value: function () {
+                            var e = new Event("resize");
+                            window.dispatchEvent(e),
+                                K.debug("-------------window resize!")
+                        }
+                    }]),
+                a
+        }(c.default.Component);
+        N.propTypes = {
             onRoomLinkCopy: m.default.func.isRequired,
             onSetAudioMode: m.default.func.isRequired,
             onRestartIce: m.default.func.isRequired
         };
-        var N = (0,
+        var O = (0,
             d.connect)(function (e) {
                 var a = (0,
                     t.default)(e.peers);
-                return {
+                return console.log("---------9999999999------------"),
+                    console.log(e.routes.url),
+                {
                     skins: e.skins,
                     me: e.me,
+                    room: e.room,
                     peers: a,
                     course: e.course,
+                    routes: e.routes.url,
                     members: e.members,
                     teacher: "teacher" === e.me.role ? e.me : a.find(function (e) {
                         return "teacher" === e.role
@@ -10976,8 +11360,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         e(p.restartIce())
                     }
                 }
-            })(F);
-        r.default = N
+            })(N);
+        r.default = O
     }
         , {
         "../../config": 1,
@@ -11192,25 +11576,25 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         Object.defineProperty(r, "__esModule", {
             value: !0
         });
-        var n = S(e("babel-runtime/core-js/get-iterator"))
-            , t = S(e("babel-runtime/core-js/object/values"))
-            , o = S(e("babel-runtime/core-js/object/get-prototype-of"))
-            , i = S(e("babel-runtime/helpers/classCallCheck"))
-            , l = S(e("babel-runtime/helpers/createClass"))
-            , s = S(e("babel-runtime/helpers/possibleConstructorReturn"))
-            , u = S(e("babel-runtime/helpers/inherits"))
-            , c = S(e("react"))
+        var n = M(e("babel-runtime/core-js/get-iterator"))
+            , t = M(e("babel-runtime/core-js/object/values"))
+            , o = M(e("babel-runtime/core-js/object/get-prototype-of"))
+            , i = M(e("babel-runtime/helpers/classCallCheck"))
+            , l = M(e("babel-runtime/helpers/createClass"))
+            , s = M(e("babel-runtime/helpers/possibleConstructorReturn"))
+            , u = M(e("babel-runtime/helpers/inherits"))
+            , c = M(e("react"))
             , d = e("react-redux")
-            , h = S(e("classnames"))
+            , h = M(e("classnames"))
             , m = e("react-router")
-            , f = (v(e("../redux/stateActions")),
-                v(e("../redux/requestActions")))
-            , p = v(e("../redux/routeActions"))
-            , g = e("react-device-detect")
-            , y = S(e("is-electron"))
-            , b = S(e("../Logger"))
-            , k = S(e("../../config"));
-        function v(e) {
+            , f = S(e("../redux/stateActions"))
+            , p = S(e("../redux/requestActions"))
+            , g = S(e("../redux/routeActions"))
+            , y = e("react-device-detect")
+            , b = M(e("is-electron"))
+            , k = M(e("../Logger"))
+            , v = M(e("../../config"));
+        function S(e) {
             if (e && e.__esModule)
                 return e;
             var a = {};
@@ -11220,14 +11604,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             return a.default = e,
                 a
         }
-        function S(e) {
+        function M(e) {
             return e && e.__esModule ? e : {
                 default: e
             }
         }
-        var M = new b.default("screenShare")
-            , w = "unknow"
-            , C = function (e) {
+        var w = new k.default("screenShare")
+            , C = "unknow"
+            , B = function (e) {
                 function a(e) {
                     (0,
                         i.default)(this, a);
@@ -11241,7 +11625,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         r.state = {
                             permissionShareScreen: n,
                             isMe: !1,
-                            _extension_installed_state: w,
+                            _extension_installed_state: C,
                             screenShareIng: !1
                         },
                         r
@@ -11253,7 +11637,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "render",
                             value: function () {
                                 return this.props.isTeacher ? this.props.screenShareConsumer || this.props.screenCapturing ? this.props.screenCapturing ? (0,
-                                    y.default)() ? this.renderForTeacherInElectron() : g.isChrome ? this.renderForTeacherInChrome() : this.renderForTeacherInNonChrome() : this.renderForNonTeacher() : this.renderControlPanel() : this.renderForNonTeacher()
+                                    b.default)() ? this.renderForTeacherInElectron() : y.isChrome ? this.renderForTeacherInChrome() : this.renderForTeacherInNonChrome() : this.renderForNonTeacher() : this.renderControlPanel() : this.renderForNonTeacher()
                             }
                         }, {
                             key: "renderControlPanel",
@@ -11303,7 +11687,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "renderForTeacherInChrome",
                             value: function () {
                                 var e = this;
-                                return g.isChrome || parseInt(g.browserVersion) >= 70 || this.state._extension_installed_state === w ? c.default.createElement("div", {
+                                return y.isChrome || parseInt(y.browserVersion) >= 70 || this.state._extension_installed_state === C ? c.default.createElement("div", {
                                     "data-component": "ScreenSharing",
                                     ref: function (a) {
                                         e.pptWapperNode = a
@@ -11395,20 +11779,20 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     permissionShareScreen: t
                                 }),
                                     this.props.connected && !n && this.stopScreenShare(),
-                                    a ? M.debug(" screenShareConsumer:%o", a) : a || r || (this._stream = null,
+                                    a ? w.debug(" screenShareConsumer:%o", a) : a || r || (this._stream = null,
                                         this.setState({
                                             screenShareIng: !1
                                         })),
-                                    r && r.track && (M.debug("screenShareAudioConsumer: %o", r),
-                                        null === this._stream && (M.debug("screenShareConsumer, new MediaStream from audio"),
+                                    r && r.track && (w.debug("screenShareAudioConsumer: %o", r),
+                                        null === this._stream && (w.debug("screenShareConsumer, new MediaStream from audio"),
                                             this._stream = new MediaStream),
-                                        this._stream.getAudioTracks()[0] || (M.debug("screenShareAudioConsumer: add screenshare audio track"),
+                                        this._stream.getAudioTracks()[0] || (w.debug("screenShareAudioConsumer: add screenshare audio track"),
                                             this._stream.addTrack(r.track))),
                                     a && a.track && !this.state.screenShareIng) {
                                     this._track = a.track,
-                                        null === this._stream && (M.debug("screenShareConsumer, new MediaStream from video"),
+                                        null === this._stream && (w.debug("screenShareConsumer, new MediaStream from video"),
                                             this._stream = new MediaStream),
-                                        this._stream.getVideoTracks()[0] || (M.debug("screenShareConsumer, add screenshare video tracks"),
+                                        this._stream.getVideoTracks()[0] || (w.debug("screenShareConsumer, add screenshare video tracks"),
                                             this._stream.addTrack(a.track));
                                     var o = this.refs.video;
                                     o && (o.srcObject = this._stream,
@@ -11424,10 +11808,12 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 var e = this.props
                                     , a = e.sendRoute
                                     , r = e.disableScreenShare
-                                    , n = k.default.router.room;
+                                    , n = e.DoubleLeft
+                                    , t = v.default.router.room;
                                 r(),
-                                    a(n),
-                                    m.hashHistory.push(n)
+                                    a(t),
+                                    n(t),
+                                    m.hashHistory.push(t)
                             }
                         }, {
                             key: "componentDidMount",
@@ -11448,17 +11834,17 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 (r || this.props.me.canControlContent) && (n.canSendWebcam ? this._origin_webcamState = t ? "on" : "off" : this._origin_webcamState = "unsupported",
                                     "on" == this._origin_webcamState && o(),
                                     (0,
-                                        y.default)() ? i() : g.isChrome && (M.debug("shinevv screen share in Chrome"),
-                                            parseInt(g.browserVersion) >= 70 ? (M.debug("shinevv screen share by Chrome >= 70"),
-                                                i()) : getChromeExtensionStatus(k.default.connectToLocalServer ? "ojnbbiajldkoldblldlmigongadfcbnc" : "kcganknobbleodggkdhefbiejbaceimm", function (a) {
-                                                    "installed-enabled" == a ? (M.debug("shinevv screen share plugin installed"),
+                                        b.default)() ? i() : y.isChrome && (w.debug("shinevv screen share in Chrome"),
+                                            parseInt(y.browserVersion) >= 70 ? (w.debug("shinevv screen share by Chrome >= 70"),
+                                                i()) : getChromeExtensionStatus(v.default.connectToLocalServer ? "ojnbbiajldkoldblldlmigongadfcbnc" : "kcganknobbleodggkdhefbiejbaceimm", function (a) {
+                                                    "installed-enabled" == a ? (w.debug("shinevv screen share plugin installed"),
                                                         e.setState({
                                                             isMe: !0
                                                         }),
                                                         e.setState({
                                                             _extension_installed_state: "installed-enabled"
                                                         }),
-                                                        i()) : (M.debug("shinevv screen share plugin not installed"),
+                                                        i()) : (w.debug("shinevv screen share plugin not installed"),
                                                             e.setState({
                                                                 _extension_installed_state: "installed-disable"
                                                             }))
@@ -11561,22 +11947,27 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             }, function (e) {
                 return {
                     enableWebcam: function () {
-                        return e(f.enableWebcam())
+                        return e(p.enableWebcam())
                     },
                     disableWebcam: function () {
-                        return e(f.disableWebcam())
+                        return e(p.disableWebcam())
                     },
                     enableScreenShare: function () {
-                        return e(f.enableScreenShare())
+                        return e(p.enableScreenShare())
                     },
                     disableScreenShare: function () {
-                        return e(f.disableScreenShare())
+                        return e(p.disableScreenShare())
                     },
                     sendRoute: function (a) {
-                        return e(p.sendRoute(a))
+                        return e(g.sendRoute(a))
+                    },
+                    DoubleLeft: function (a) {
+                        return e(f.DoubleLeft({
+                            leftUrl: a
+                        }))
                     }
                 }
-            })(C)
+            })(B)
     }
         , {
         "../../config": 1,
@@ -15035,95 +15426,146 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             streamingUrl: "",
             serverRecord: !1,
             localRecordStatus: !1,
-            liveStatus: !1
+            liveStatus: !1,
+            doubleFlag: !1,
+            leftUrl: "",
+            rightUrl: "",
+            allAudioMute: !0,
+            allVideoDisabled: !0
         };
+        console.log("hhhhhhhhhh");
         r.default = function () {
             var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : i
                 , a = arguments[1];
             switch (a.type) {
-                case "SET_ROOM_INFO":
-                    var r = a.payload
-                        , n = r.roomId
-                        , t = r.accessToken
-                        , l = r.title;
+                case "CHANGE_AUDIO_FLAG":
+                    var r = a.payload.allAudioMute;
                     return (0,
                         o.default)({}, e, {
-                            roomId: n,
-                            accessToken: t,
-                            title: l
+                            allAudioMute: r
+                        });
+                case "CHANGE_VIDEO_FLAG":
+                    var n = a.payload.allVideoDisabled;
+                    return (0,
+                        o.default)({}, e, {
+                            allVideoDisabled: n
+                        });
+                case "CHANGE_AUDIO":
+                    var t = a.payload.allAudioMute;
+                    return (0,
+                        o.default)({}, e, {
+                            allAudioMute: t
+                        });
+                case "CHANGE_VIDIO":
+                    var l = a.payload.allVideoDisabled;
+                    return (0,
+                        o.default)({}, e, {
+                            allVideoDisabled: l
+                        });
+                case "SET_ROOM_INFO":
+                    var s = a.payload
+                        , u = s.roomId
+                        , c = s.accessToken
+                        , d = s.title;
+                    return (0,
+                        o.default)({}, e, {
+                            roomId: u,
+                            accessToken: c,
+                            title: d
+                        });
+                case "CHANGE_DOUBLE_URL":
+                    var h = a.payload
+                        , m = h.leftUrl
+                        , f = h.rightUrl;
+                    return (0,
+                        o.default)({}, e, {
+                            leftUrl: m,
+                            rightUrl: f
+                        });
+                case "DOUBLE_LEFT":
+                    var p = a.payload.leftUrl;
+                    return (0,
+                        o.default)({}, e, {
+                            leftUrl: p
                         });
                 case "SET_ROOM_URL":
-                    var s = a.payload.url;
+                    var g = a.payload.url;
                     return (0,
                         o.default)({}, e, {
-                            url: s
+                            url: g
                         });
                 case "SET_ROOM_STATE":
-                    var u = a.payload.state;
-                    return "connected" == u ? (0,
+                    var y = a.payload.state;
+                    return "connected" == y ? (0,
                         o.default)({}, e, {
-                            state: u
+                            state: y
                         }) : (0,
                             o.default)({}, e, {
-                                state: u,
+                                state: y,
                                 activeSpeakerName: null
                             });
                 case "SET_ROOM_MEDIA_STATE":
-                    var c = a.payload.state;
+                    var b = a.payload.state;
                     return (0,
                         o.default)({}, e, {
-                            mediaState: c
+                            mediaState: b
                         });
                 case "SET_ROOM_ACTIVE_SPEAKER":
-                    var d = a.payload.peerName;
+                    var k = a.payload.peerName;
                     return (0,
                         o.default)({}, e, {
-                            activeSpeakerName: d
+                            activeSpeakerName: k
                         });
                 case "SET_UPLOAD_PROGRESS":
-                    var h = a.payload.rate;
+                    var v = a.payload.rate;
                     return (0,
                         o.default)({}, e, {
-                            rate: h
+                            rate: v
                         });
                 case "SET_ALL_MUTE":
-                    var m = a.payload.rate;
+                    var S = a.payload.rate;
                     return (0,
                         o.default)({}, e, {
-                            rate: m
+                            rate: S
                         });
                 case "SET_ALL_UNVIDEO":
-                    var f = a.payload.rate;
+                    var M = a.payload.rate;
                     return (0,
                         o.default)({}, e, {
-                            rate: f
+                            rate: M
                         });
                 case "SET_RTMP_URL":
-                    var p = a.payload
-                        , g = p.ingestUrl
-                        , y = p.streamingUrl;
+                    var w = a.payload
+                        , C = w.ingestUrl
+                        , B = w.streamingUrl;
                     return (0,
                         o.default)({}, e, {
-                            ingestUrl: g,
-                            streamingUrl: y
+                            ingestUrl: C,
+                            streamingUrl: B
                         });
                 case "SET_SERVER_RECORD_INFO":
-                    var b = a.payload.serverRecord;
+                    var _ = a.payload.serverRecord;
                     return (0,
                         o.default)({}, e, {
-                            serverRecord: b
+                            serverRecord: _
                         });
                 case "SET_LOCAL_RECORD_STATUS":
-                    var k = a.payload.localRecordStatus;
+                    var P = a.payload.localRecordStatus;
                     return (0,
                         o.default)({}, e, {
-                            localRecordStatus: k
+                            localRecordStatus: P
                         });
                 case "SET_LIVE_STATUS":
-                    var v = a.payload.liveStatus;
+                    var R = a.payload.liveStatus;
                     return (0,
                         o.default)({}, e, {
-                            liveStatus: v
+                            liveStatus: R
+                        });
+                case "CHANGE_DOUBLE_FLAG":
+                    var D = a.payload.doubleFlag;
+                    return (0,
+                        o.default)({}, e, {
+                            doubleFlag: D
                         });
                 default:
                     return e
@@ -15750,6 +16192,42 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             case "START_STUDENT_SIGNIN":
                                 t.startSignin();
                                 break;
+                            case "START_DOUBLE_FLAG":
+                                var H = i.payload
+                                    , A = H.leftUrl
+                                    , G = H.rightUrl;
+                                t.startDoubleFlag({
+                                    leftUrl: A,
+                                    rightUrl: G
+                                });
+                                break;
+                            case "CHANGE_AUDIO":
+                                var K = i.payload.allAudioMute;
+                                t.changeAudio({
+                                    allAudioMute: K
+                                });
+                                break;
+                            case "CHANGE_VIDEO":
+                                var x = i.payload.allVideoDisabled;
+                                t.changeVideo({
+                                    allVideoDisabled: x
+                                });
+                                break;
+                            case "DOUBLE_LEFT":
+                                var F = i.payload.leftUrl;
+                                t.DoubleLeft({
+                                    leftUrl: F
+                                });
+                                break;
+                            case "DOUBLE_RIGHT":
+                                var N = i.payload.rightUrl;
+                                t.DoubleRight({
+                                    rightUrl: N
+                                });
+                                break;
+                            case "END_DOUBLE_FLAG":
+                                t.endDoubleFlag();
+                                break;
                             case "STUDENT_SIGNIN":
                                 t.studentSignin();
                                 break;
@@ -15757,59 +16235,59 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 t.stopSignin();
                                 break;
                             case "DELETE_FILE":
-                                var H = i.payload.deleteId;
-                                t.deleteFile(H);
+                                var O = i.payload.deleteId;
+                                t.deleteFile(O);
                                 break;
                             case "SEND_METHOD_PPT":
-                                var A = i.payload
-                                    , G = A.type
-                                    , K = A.method;
-                                t.sendMethodPPT(G, K);
+                                var W = i.payload
+                                    , j = W.type
+                                    , V = W.method;
+                                t.sendMethodPPT(j, V);
                                 break;
                             case "SET_MEMBERS_CAN_CONTROL_CONTENT":
                                 console.log("SET_MEMBERS_CAN_CONTROL_CONTENT---");
-                                var x = i.payload
-                                    , F = x.flag
-                                    , N = x.peerName;
-                                F || N !== t._peerName || t.disableScreenShare();
+                                var I = i.payload
+                                    , U = I.flag
+                                    , J = I.peerName;
+                                U || J !== t._peerName || t.disableScreenShare();
                                 break;
                             case "SET_REQUEST_CONTENT_CONTROL":
-                                var O = i.payload.flag;
-                                t.sendRequestContentControl(O);
+                                var q = i.payload.flag;
+                                t.sendRequestContentControl(q);
                                 break;
                             case "SET_REQUEST_ROLE_CHANGE":
-                                var W = i.payload.flag;
-                                t.sendRequestRoleChange(W);
+                                var Z = i.payload.flag;
+                                t.sendRequestRoleChange(Z);
                                 break;
                             case "SET_MEMBER_CAN_CONTROL_CONTENT":
-                                var j = i.payload
-                                    , V = j.flag
-                                    , I = j.peerName
-                                    , J = j.displayName;
+                                var Y = i.payload
+                                    , Q = Y.flag
+                                    , $ = Y.peerName
+                                    , X = Y.displayName;
                                 t.sendCanControlContent({
-                                    flag: V,
-                                    peerName: I,
-                                    displayName: J
+                                    flag: Q,
+                                    peerName: $,
+                                    displayName: X
                                 });
                                 break;
                             case "KICK_MEMBER_OFF":
-                                var U = i.payload
-                                    , q = U.peerName
-                                    , Z = U.displayName;
+                                var ee = i.payload
+                                    , ae = ee.peerName
+                                    , re = ee.displayName;
                                 t.kickMemberOff({
-                                    peerName: q,
-                                    displayName: Z
+                                    peerName: ae,
+                                    displayName: re
                                 });
                                 break;
                             case "CHANGE_MEMBER_ROLE":
-                                var Y = i.payload
-                                    , Q = Y.peerName
-                                    , $ = Y.displayName
-                                    , X = Y.role;
+                                var ne = i.payload
+                                    , te = ne.peerName
+                                    , oe = ne.displayName
+                                    , ie = ne.role;
                                 t.changeMemberRole({
-                                    peerName: Q,
-                                    displayName: $,
-                                    role: X
+                                    peerName: te,
+                                    displayName: oe,
+                                    role: ie
                                 });
                                 break;
                             case "ENABLE_SCREEN_SHARE":
@@ -15828,19 +16306,19 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 t.stopRecord();
                                 break;
                             case "SEND_DRAWBOARD_PAGES":
-                                var ee = i.canvasPages;
-                                t.sendDrawBoardPages(ee);
+                                var le = i.canvasPages;
+                                t.sendDrawBoardPages(le);
                                 break;
                             case "SEND_DRAWBOARD_INDEX":
-                                var ae = i.canvasIndex;
-                                t.sendDrawBoardIndex(ae);
+                                var se = i.canvasIndex;
+                                t.sendDrawBoardIndex(se);
                                 break;
                             case "SEND_DRAWBOARD_ORI":
-                                var re = i.id
-                                    , ne = i.ori;
+                                var ue = i.id
+                                    , ce = i.ori;
                                 t.sendSetDrawBoardOri({
-                                    id: re,
-                                    ori: ne
+                                    id: ue,
+                                    ori: ce
                                 })
                         }
                         return e(i)
@@ -16108,7 +16586,100 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         "use strict";
         Object.defineProperty(r, "__esModule", {
             value: !0
-        });
+        }),
+            r.changeAudioFlag = function (e) {
+                return {
+                    type: "CHANGE_AUDIO_FLAG",
+                    payload: {
+                        allAudioMute: e.allAudioMute
+                    }
+                }
+            }
+            ,
+            r.changeVideoFlag = function (e) {
+                return {
+                    type: "CHANGE_VIDEO_FLAG",
+                    payload: {
+                        allVideoDisabled: e.allVideoDisabled
+                    }
+                }
+            }
+            ,
+            r.changeAudio = function (e) {
+                return {
+                    type: "CHANGE_AUDIO",
+                    payload: {
+                        allAudioMute: e.allAudioMute
+                    }
+                }
+            }
+            ,
+            r.changeVideo = function (e) {
+                return {
+                    type: "CHANGE_VIDEO",
+                    payload: {
+                        allVideoDisabled: e.allVideoDisabled
+                    }
+                }
+            }
+            ,
+            r.startDoubleFlag = function (e) {
+                var a = e.leftUrl
+                    , r = e.rightUrl;
+                return {
+                    type: "START_DOUBLE_FLAG",
+                    payload: {
+                        leftUrl: a,
+                        rightUrl: r
+                    }
+                }
+            }
+            ,
+            r.DoubleLeft = function (e) {
+                return {
+                    type: "DOUBLE_LEFT",
+                    payload: {
+                        leftUrl: e.leftUrl
+                    }
+                }
+            }
+            ,
+            r.DoubleRight = function (e) {
+                return {
+                    type: "DOUBLE_RIGHT",
+                    payload: {
+                        rightUrl: e.rightUrl
+                    }
+                }
+            }
+            ,
+            r.endDoubleFlag = function () {
+                return {
+                    type: "END_DOUBLE_FLAG"
+                }
+            }
+            ,
+            r.changeDoubleUrl = function (e) {
+                var a = e.leftUrl
+                    , r = e.rightUrl;
+                return {
+                    type: "CHANGE_DOUBLE_URL",
+                    payload: {
+                        leftUrl: a,
+                        rightUrl: r
+                    }
+                }
+            }
+            ;
+        r.changeDoubleFlag = function (e) {
+            return {
+                type: "CHANGE_DOUBLE_FLAG",
+                payload: {
+                    doubleFlag: e.doubleFlag
+                }
+            }
+        }
+            ;
         r.setRoomInfo = function (e) {
             return {
                 type: "SET_ROOM_INFO",
@@ -21029,7 +21600,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             , j = "function" == typeof z && !!P.f
             , V = n.QObject
             , I = !V || !V.prototype || !V.prototype.findChild
-            , J = o && u(function () {
+            , U = o && u(function () {
                 return 7 != C(L({}, "a", {
                     get: function () {
                         return L(this, "a", {
@@ -21044,7 +21615,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     n && e !== W && L(W, a, n)
             }
                 : L
-            , U = function (e) {
+            , J = function (e) {
                 var a = N[e] = C(z.prototype);
                 return a._k = e,
                     a
@@ -21065,7 +21636,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             enumerable: w(0, !1)
                         })) : (t(e, G) || L(e, G, w(1, {})),
                             e[G][a] = !0),
-                        J(e, a, r)) : L(e, a, r)
+                        U(e, a, r)) : L(e, a, r)
             }
             , Y = function (e, a) {
                 b(e);
@@ -21103,13 +21674,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 , a = function (r) {
                     this === W && a.call(O, r),
                         t(this, G) && t(this[G], e) && (this[G][e] = !1),
-                        J(this, e, w(1, r))
+                        U(this, e, w(1, r))
                 };
-            return o && I && J(W, e, {
+            return o && I && U(W, e, {
                 configurable: !0,
                 set: a
             }),
-                U(e)
+                J(e)
         }
         ).prototype, "toString", function () {
             return this._k
@@ -21121,7 +21692,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             P.f = ee,
             o && !e("./_library") && l(W, "propertyIsEnumerable", Q, !0),
             f.f = function (e) {
-                return U(m(e))
+                return J(m(e))
             }
         ),
             i(i.G + i.W + i.F * !j, {
@@ -23026,8 +23597,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 , j = t.RangeError
                 , V = t.TypeError
                 , I = t.Uint8Array
-                , J = Array.prototype
-                , U = s.ArrayBuffer
+                , U = Array.prototype
+                , J = s.ArrayBuffer
                 , q = s.DataView
                 , Z = T(0)
                 , Y = T(2)
@@ -23040,14 +23611,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 , ne = z.values
                 , te = z.keys
                 , oe = z.entries
-                , ie = J.lastIndexOf
-                , le = J.reduce
-                , se = J.reduceRight
-                , ue = J.join
-                , ce = J.sort
-                , de = J.slice
-                , he = J.toString
-                , me = J.toLocaleString
+                , ie = U.lastIndexOf
+                , le = U.reduce
+                , se = U.reduceRight
+                , ue = U.join
+                , ce = U.sort
+                , de = U.slice
+                , he = U.toString
+                , me = U.toLocaleString
                 , fe = D("iterator")
                 , pe = D("toStringTag")
                 , ge = R("typed_constructor")
@@ -23284,7 +23855,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         c(e, f, u, "_d");
                         var o, i, l, s, d = 0, m = 0;
                         if (S(r)) {
-                            if (!(r instanceof U || "ArrayBuffer" == (s = v(r)) || "SharedArrayBuffer" == s))
+                            if (!(r instanceof J || "ArrayBuffer" == (s = v(r)) || "SharedArrayBuffer" == s))
                                 return ke in r ? Re(f, r) : Te.call(f, r);
                             o = r,
                                 m = Ce(n, a);
@@ -23299,7 +23870,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             l = i / a
                         } else
                             l = g(r),
-                                o = new U(i = l * a);
+                                o = new J(i = l * a);
                         for (h(e, "_d", {
                             b: o,
                             o: m,
@@ -23322,7 +23893,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         }, !0) || (f = r(function (e, r, n, t) {
                             var o;
                             return c(e, f, u),
-                                S(r) ? r instanceof U || "ArrayBuffer" == (o = v(r)) || "SharedArrayBuffer" == o ? void 0 !== t ? new y(r, Ce(n, a), t) : void 0 !== n ? new y(r, Ce(n, a)) : new y(r) : ke in r ? Re(f, r) : Te.call(f, r) : new y(g(r))
+                                S(r) ? r instanceof J || "ArrayBuffer" == (o = v(r)) || "SharedArrayBuffer" == o ? void 0 !== t ? new y(r, Ce(n, a), t) : void 0 !== n ? new y(r, Ce(n, a)) : new y(r) : ke in r ? Re(f, r) : Te.call(f, r) : new y(g(r))
                         }),
                             Z(b !== Function.prototype ? _(y).concat(_(b)) : _(y), function (e) {
                                 e in f || h(f, e, y[e])
@@ -23549,13 +24120,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     new v(NaN),
                     "ArrayBuffer" != v.name
             })) {
-                for (var I, J = (v = function (e) {
+                for (var I, U = (v = function (e) {
                     return c(this, v),
                         new B(m(e))
                 }
-                )[b] = B[b], U = f(B), q = 0; U.length > q;)
-                    (I = U[q++]) in v || l(v, I, B[I]);
-                o || (J.constructor = v)
+                )[b] = B[b], J = f(B), q = 0; J.length > q;)
+                    (I = J[q++]) in v || l(v, I, B[I]);
+                o || (U.constructor = v)
             }
             var Z = new S(new v(2))
                 , Y = S[b].setInt8;
@@ -31912,15 +32483,15 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                             break;
                                         case "consumerPreferredProfileSet":
                                             var I = e.id
-                                                , J = e.peerName
-                                                , U = e.profile
-                                                , q = a._peers.get(J);
+                                                , U = e.peerName
+                                                , J = e.profile
+                                                , q = a._peers.get(U);
                                             if (!q)
-                                                throw new Error('no Peer found [name:"'.concat(J, '"]'));
+                                                throw new Error('no Peer found [name:"'.concat(U, '"]'));
                                             var Z = q.getConsumerById(I);
                                             if (!Z)
                                                 throw new Error("Consumer not found [id:".concat(I, "]"));
-                                            Z.remoteSetPreferredProfile(U);
+                                            Z.remoteSetPreferredProfile(J);
                                             break;
                                         case "consumerEffectiveProfileChanged":
                                             var Y = e.id
@@ -39260,8 +39831,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         , V = !1
                                         , I = void 0;
                                     try {
-                                        for (var J, U = function () {
-                                            var e = J.value;
+                                        for (var U, J = function () {
+                                            var e = U.value;
                                             if (!(m.ext || []).find(function (a) {
                                                 return a.uri === e.uri
                                             }))
@@ -39270,8 +39841,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                                 uri: e.uri,
                                                 value: e.id
                                             })
-                                        }, q = y[Symbol.iterator](); !(j = (J = q.next()).done); j = !0)
-                                            U()
+                                        }, q = y[Symbol.iterator](); !(j = (U = q.next()).done); j = !0)
+                                            J()
                                     } catch (e) {
                                         V = !0,
                                             I = e
@@ -39908,10 +40479,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         k.ext = [];
                                         var V = !0
                                             , I = !1
-                                            , J = void 0;
+                                            , U = void 0;
                                         try {
-                                            for (var U, q = function () {
-                                                var e = U.value;
+                                            for (var J, q = function () {
+                                                var e = J.value;
                                                 if (!(m.ext || []).find(function (a) {
                                                     return a.uri === e.uri
                                                 }))
@@ -39920,17 +40491,17 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                                     uri: e.uri,
                                                     value: e.id
                                                 })
-                                            }, Z = b[Symbol.iterator](); !(V = (U = Z.next()).done); V = !0)
+                                            }, Z = b[Symbol.iterator](); !(V = (J = Z.next()).done); V = !0)
                                                 q()
                                         } catch (e) {
                                             I = !0,
-                                                J = e
+                                                U = e
                                         } finally {
                                             try {
                                                 V || null == Z.return || Z.return()
                                             } finally {
                                                 if (I)
-                                                    throw J
+                                                    throw U
                                             }
                                         }
                                     }
@@ -40168,10 +40739,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                             k.ext = [];
                                             var V = !0
                                                 , I = !1
-                                                , J = void 0;
+                                                , U = void 0;
                                             try {
-                                                for (var U, q = b[Symbol.iterator](); !(V = (U = q.next()).done); V = !0) {
-                                                    var Z = U.value;
+                                                for (var J, q = b[Symbol.iterator](); !(V = (J = q.next()).done); V = !0) {
+                                                    var Z = J.value;
                                                     "urn:ietf:params:rtp-hdrext:sdes:mid" !== Z.uri && k.ext.push({
                                                         uri: Z.uri,
                                                         value: Z.id
@@ -40179,13 +40750,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                                 }
                                             } catch (e) {
                                                 I = !0,
-                                                    J = e
+                                                    U = e
                                             } finally {
                                                 try {
                                                     V || null == q.return || q.return()
                                                 } finally {
                                                     if (I)
-                                                        throw J
+                                                        throw U
                                                 }
                                             }
                                         }
@@ -40873,16 +41444,16 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     try {
                         for (var j, V = S[Symbol.iterator](); !(N = (j = V.next()).done); N = !0) {
                             var I = n(j.value, 2)
-                                , J = I[0]
+                                , U = I[0]
                                 , L = I[1]
-                                , U = {
-                                    ssrc: J
+                                , J = {
+                                    ssrc: U
                                 };
-                            L && (U.rtx = {
+                            L && (J.rtx = {
                                 ssrc: L
                             }),
-                                x && (U.profile = F.shift()),
-                                e.encodings.push(U)
+                                x && (J.profile = F.shift()),
+                                e.encodings.push(J)
                         }
                     } catch (e) {
                         O = !0,
@@ -42104,7 +42675,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         )
                 }
                 function I(e, a) {
-                    return e.isValid() ? (a = J(a, e.localeData()),
+                    return e.isValid() ? (a = U(a, e.localeData()),
                         W[a] = W[a] || function (e) {
                             var a, r, n, t = e.match(N);
                             for (a = 0,
@@ -42119,7 +42690,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         }(a),
                         W[a](e)) : e.localeData().invalidDate()
                 }
-                function J(e, a) {
+                function U(e, a) {
                     var r = 5;
                     function n(e) {
                         return a.longDateFormat(e) || e
@@ -42130,7 +42701,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             r -= 1;
                     return e
                 }
-                var U = /\d/
+                var J = /\d/
                     , q = /\d\d/
                     , Z = /\d{3}/
                     , Y = /\d{4}/
@@ -42355,7 +42926,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 }
                 function Ie(e, a, r) {
                     var n, t, o = je(e.year(), a, r), i = Math.floor((e.dayOfYear() - o - 1) / 7) + 1;
-                    return i < 1 ? n = i + Je(t = e.year() - 1, a, r) : i > Je(e.year(), a, r) ? (n = i - Je(e.year(), a, r),
+                    return i < 1 ? n = i + Ue(t = e.year() - 1, a, r) : i > Ue(e.year(), a, r) ? (n = i - Ue(e.year(), a, r),
                         t = e.year() + 1) : (t = e.year(),
                             n = i),
                     {
@@ -42363,12 +42934,12 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         year: t
                     }
                 }
-                function Je(e, a, r) {
+                function Ue(e, a, r) {
                     var n = je(e, a, r)
                         , t = je(e + 1, a, r);
                     return (_e(e) - n + t) / 7
                 }
-                function Ue(e, a) {
+                function Je(e, a) {
                     return e.slice(a, 7).concat(e.slice(0, a))
                 }
                 V("w", ["ww", 2], "wo", "week"),
@@ -42697,7 +43268,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         null != a.d ? ((t = a.d) < 0 || t > 6) && (s = !0) : null != a.e ? (t = a.e + o,
                                             (a.e < 0 || a.e > 6) && (s = !0)) : t = o
                                 }
-                                n < 1 || n > Je(r, o, i) ? f(e)._overflowWeeks = !0 : null != s ? f(e)._overflowWeekday = !0 : (l = Ve(r, n, t, o, i),
+                                n < 1 || n > Ue(r, o, i) ? f(e)._overflowWeeks = !0 : null != s ? f(e)._overflowWeekday = !0 : (l = Ve(r, n, t, o, i),
                                     e._a[ye] = l.year,
                                     e._dayOfYear = l.dayOfYear)
                             }(e),
@@ -42823,7 +43394,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             e._a = [],
                                 f(e).empty = !0;
                             var a, r, n, o, i, l = "" + e._i, s = l.length, u = 0;
-                            for (n = J(e._f, e._locale).match(N) || [],
+                            for (n = U(e._f, e._locale).match(N) || [],
                                 a = 0; a < n.length; a++)
                                 o = n[a],
                                     (r = (l.match(de(o, e)) || [])[0]) && ((i = l.substr(0, l.indexOf(r))).length > 0 && f(e).unusedInput.push(i),
@@ -43031,8 +43602,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 t.updateOffset = function () { }
                     ;
                 var Ia = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/
-                    , Ja = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
-                function Ua(e, a) {
+                    , Ua = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
+                function Ja(e, a) {
                     var r, n, t, o = e, i = null;
                     return Ka(e) ? o = {
                         ms: e._milliseconds,
@@ -43047,7 +43618,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 m: w(i[Se]) * r,
                                 s: w(i[Me]) * r,
                                 ms: w(xa(1e3 * i[we])) * r
-                            }) : (i = Ja.exec(e)) ? (r = "-" === i[1] ? -1 : 1,
+                            }) : (i = Ua.exec(e)) ? (r = "-" === i[1] ? -1 : 1,
                                 o = {
                                     y: qa(i[2], r),
                                     M: qa(i[3], r),
@@ -43092,7 +43663,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             t = r,
                             r = n,
                             n = t),
-                            Qa(this, Ua(r = "string" == typeof r ? +r : r, n), e),
+                            Qa(this, Ja(r = "string" == typeof r ? +r : r, n), e),
                             this
                     }
                 }
@@ -43106,9 +43677,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         o && e._d.setTime(e._d.valueOf() + o * r),
                         n && t.updateOffset(e, i || l))
                 }
-                Ua.fn = Ga.prototype,
-                    Ua.invalid = function () {
-                        return Ua(NaN)
+                Ja.fn = Ga.prototype,
+                    Ja.invalid = function () {
+                        return Ja(NaN)
                     }
                     ;
                 var $a = Ya(1, "add")
@@ -43149,7 +43720,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 }
                 function hr(e, a, r, n, t) {
                     var o;
-                    return null == e ? Ie(this, n, t).year : (a > (o = Je(e, n, t)) && (a = o),
+                    return null == e ? Ie(this, n, t).year : (a > (o = Ue(e, n, t)) && (a = o),
                         function (e, a, r, n, t) {
                             var o = Ve(e, a, r, n, t)
                                 , i = We(o.year, 0, o.dayOfYear);
@@ -43191,7 +43762,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     V("Q", 0, "Qo", "quarter"),
                     H("quarter", "Q"),
                     x("quarter", 7),
-                    ce("Q", U),
+                    ce("Q", J),
                     fe("Q", function (e, a) {
                         a[be] = 3 * (w(e) - 1)
                     }),
@@ -43257,7 +43828,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }),
                     H("millisecond", "ms"),
                     x("millisecond", 16),
-                    ce("S", ae, U),
+                    ce("S", ae, J),
                     ce("SS", ae, q),
                     ce("SSS", ae, Z),
                     pr = "SSSS"; pr.length <= 9; pr += "S")
@@ -43374,7 +43945,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }
                     ,
                     kr.from = function (e, a) {
-                        return this.isValid() && (S(e) && e.isValid() || La(e).isValid()) ? Ua({
+                        return this.isValid() && (S(e) && e.isValid() || La(e).isValid()) ? Ja({
                             to: this,
                             from: e
                         }).locale(this.locale()).humanize(!a) : this.localeData().invalidDate()
@@ -43385,7 +43956,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }
                     ,
                     kr.to = function (e, a) {
-                        return this.isValid() && (S(e) && e.isValid() || La(e).isValid()) ? Ua({
+                        return this.isValid() && (S(e) && e.isValid() || La(e).isValid()) ? Ja({
                             from: this,
                             to: e
                         }).locale(this.locale()).humanize(!a) : this.localeData().invalidDate()
@@ -43612,11 +44183,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     ,
                     kr.weeksInYear = function () {
                         var e = this.localeData()._week;
-                        return Je(this.year(), e.dow, e.doy)
+                        return Ue(this.year(), e.dow, e.doy)
                     }
                     ,
                     kr.isoWeeksInYear = function () {
-                        return Je(this.year(), 1, 4)
+                        return Ue(this.year(), 1, 4)
                     }
                     ,
                     kr.date = mr,
@@ -43672,7 +44243,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 this._offset = e,
                                 this._isUTC = !0,
                                 null != n && this.add(n, "m"),
-                                o !== e && (!a || this._changeInProgress ? Qa(this, Ua(e - o, "m"), 1, !1) : this._changeInProgress || (this._changeInProgress = !0,
+                                o !== e && (!a || this._changeInProgress ? Qa(this, Ja(e - o, "m"), 1, !1) : this._changeInProgress || (this._changeInProgress = !0,
                                     t.updateOffset(this, !0),
                                     this._changeInProgress = null)),
                                 this
@@ -43891,15 +44462,15 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     ,
                     Sr.weekdays = function (e, a) {
                         var r = o(this._weekdays) ? this._weekdays : this._weekdays[e && !0 !== e && this._weekdays.isFormat.test(a) ? "format" : "standalone"];
-                        return !0 === e ? Ue(r, this._week.dow) : e ? r[e.day()] : r
+                        return !0 === e ? Je(r, this._week.dow) : e ? r[e.day()] : r
                     }
                     ,
                     Sr.weekdaysMin = function (e) {
-                        return !0 === e ? Ue(this._weekdaysMin, this._week.dow) : e ? this._weekdaysMin[e.day()] : this._weekdaysMin
+                        return !0 === e ? Je(this._weekdaysMin, this._week.dow) : e ? this._weekdaysMin[e.day()] : this._weekdaysMin
                     }
                     ,
                     Sr.weekdaysShort = function (e) {
-                        return !0 === e ? Ue(this._weekdaysShort, this._week.dow) : e ? this._weekdaysShort[e.day()] : this._weekdaysShort
+                        return !0 === e ? Je(this._weekdaysShort, this._week.dow) : e ? this._weekdaysShort[e.day()] : this._weekdaysShort
                     }
                     ,
                     Sr.weekdaysParse = function (e, a, r) {
@@ -43978,7 +44549,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     t.langData = _("moment.langData is deprecated. Use moment.localeData instead.", ma);
                 var Br = Math.abs;
                 function _r(e, a, r, n) {
-                    var t = Ua(a, r);
+                    var t = Ja(a, r);
                     return e._milliseconds += n * t._milliseconds,
                         e._days += n * t._days,
                         e._months += n * t._months,
@@ -44017,8 +44588,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     , jr = Nr("minutes")
                     , Vr = Nr("hours")
                     , Ir = Nr("days")
-                    , Jr = Nr("months")
-                    , Ur = Nr("years")
+                    , Ur = Nr("months")
+                    , Jr = Nr("years")
                     , qr = Math.round
                     , Zr = {
                         ss: 44,
@@ -44154,7 +44725,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }
                     ,
                     Xr.clone = function () {
-                        return Ua(this)
+                        return Ja(this)
                     }
                     ,
                     Xr.get = function (e) {
@@ -44171,14 +44742,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         return M(this.days() / 7)
                     }
                     ,
-                    Xr.months = Jr,
-                    Xr.years = Ur,
+                    Xr.months = Ur,
+                    Xr.years = Jr,
                     Xr.humanize = function (e) {
                         if (!this.isValid())
                             return this.localeData().invalidDate();
                         var a = this.localeData()
                             , r = function (e, a, r) {
-                                var n = Ua(e).abs()
+                                var n = Ja(e).abs()
                                     , t = qr(n.as("s"))
                                     , o = qr(n.as("m"))
                                     , i = qr(n.as("h"))
@@ -44242,7 +44813,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     t.isDate = u,
                     t.locale = da,
                     t.invalid = g,
-                    t.duration = Ua,
+                    t.duration = Ja,
                     t.isMoment = S,
                     t.weekdays = function (e, a, r) {
                         return Cr(e, a, r, "weekdays")
@@ -45960,7 +46531,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     userAgent: h(n)
                 }
             }
-            , J = function (e, a, r, n) {
+            , U = function (e, a, r, n) {
                 return {
                     isConsole: e,
                     engineName: h(a.name),
@@ -45970,7 +46541,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     userAgent: h(n)
                 }
             }
-            , U = function (e, a, r, n) {
+            , J = function (e, a, r, n) {
                 return {
                     isWearable: e,
                     engineName: h(a.name),
@@ -46164,7 +46735,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     , n = q.isSmartTV
                     , t = q.isConsole
                     , o = q.isWearable;
-                return e ? j(e, l, u, c, d) : n ? I(n, u, c, d) : t ? J(t, u, c, d) : a ? V(q, s, c, d) : r ? V(q, s, c, d) : o ? U(o, u, c, d) : void 0
+                return e ? j(e, l, u, c, d) : n ? I(n, u, c, d) : t ? U(t, u, c, d) : a ? V(q, s, c, d) : r ? V(q, s, c, d) : o ? J(o, u, c, d) : void 0
             }
             ,
             r.deviceType = Be,
@@ -46506,8 +47077,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             , j = H ? Symbol.for("react.forward_ref") : 60112
             , V = H ? Symbol.for("react.suspense") : 60113
             , I = H ? Symbol.for("react.suspense_list") : 60120
-            , J = H ? Symbol.for("react.memo") : 60115
-            , U = H ? Symbol.for("react.lazy") : 60116;
+            , U = H ? Symbol.for("react.memo") : 60115
+            , J = H ? Symbol.for("react.lazy") : 60116;
         H && Symbol.for("react.fundamental"),
             H && Symbol.for("react.responder"),
             H && Symbol.for("react.scope");
@@ -46546,9 +47117,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         var a = e.render;
                         return a = a.displayName || a.name || "",
                             e.displayName || ("" !== a ? "ForwardRef(" + a + ")" : "ForwardRef");
-                    case J:
-                        return Y(e.type);
                     case U:
+                        return Y(e.type);
+                    case J:
                         if (e = 1 === e._status ? e._result : null)
                             return Y(e)
                 }
@@ -46973,20 +47544,20 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             animationstart: Ve("Animation", "AnimationStart"),
             transitionend: Ve("Transition", "TransitionEnd")
         }
-            , Je = {}
-            , Ue = {};
+            , Ue = {}
+            , Je = {};
         function qe(e) {
-            if (Je[e])
-                return Je[e];
+            if (Ue[e])
+                return Ue[e];
             if (!Ie[e])
                 return e;
             var a, r = Ie[e];
             for (a in r)
-                if (r.hasOwnProperty(a) && a in Ue)
-                    return Je[e] = r[a];
+                if (r.hasOwnProperty(a) && a in Je)
+                    return Ue[e] = r[a];
             return e
         }
-        $ && (Ue = document.createElement("div").style,
+        $ && (Je = document.createElement("div").style,
             "AnimationEvent" in window || (delete Ie.animationend.animation,
                 delete Ie.animationiteration.animation,
                 delete Ie.animationstart.animation),
@@ -47437,18 +48008,18 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 145: "ScrollLock",
                 224: "Meta"
             }
-            , Ja = {
+            , Ua = {
                 Alt: "altKey",
                 Control: "ctrlKey",
                 Meta: "metaKey",
                 Shift: "shiftKey"
             };
-        function Ua(e) {
+        function Ja(e) {
             var a = this.nativeEvent;
-            return a.getModifierState ? a.getModifierState(e) : !!(e = Ja[e]) && !!a[e]
+            return a.getModifierState ? a.getModifierState(e) : !!(e = Ua[e]) && !!a[e]
         }
         function qa() {
-            return Ua
+            return Ja
         }
         for (var Za = Oa.extend({
             key: function (e) {
@@ -48023,11 +48594,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             }
             return a
         }
-        function Jr(e) {
+        function Ur(e) {
             var a = e && e.nodeName && e.nodeName.toLowerCase();
             return a && ("input" === a && ("text" === e.type || "search" === e.type || "tel" === e.type || "url" === e.type || "password" === e.type) || "textarea" === a || "true" === e.contentEditable)
         }
-        var Ur = "$"
+        var Jr = "$"
             , qr = "/$"
             , Zr = "$?"
             , Yr = "$!"
@@ -48061,7 +48632,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             for (var a = 0; e;) {
                 if (8 === e.nodeType) {
                     var r = e.data;
-                    if (r === Ur || r === Yr || r === Zr) {
+                    if (r === Jr || r === Yr || r === Zr) {
                         if (0 === a)
                             return e;
                         a--
@@ -48326,11 +48897,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             if ("selectionchange" === e || "keyup" === e || "keydown" === e)
                 return Fn(Kn)
         }
-        function Jn(e, a) {
+        function Un(e, a) {
             if ("click" === e)
                 return Fn(a)
         }
-        function Un(e, a) {
+        function Jn(e, a) {
             if ("input" === e || "change" === e)
                 return Fn(a)
         }
@@ -48345,13 +48916,13 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     var i = Nn;
                 else if (zn(t))
                     if (On)
-                        i = Un;
+                        i = Jn;
                     else {
                         i = In;
                         var l = Vn
                     }
                 else
-                    (o = t.nodeName) && "input" === o.toLowerCase() && ("checkbox" === t.type || "radio" === t.type) && (i = Jn);
+                    (o = t.nodeName) && "input" === o.toLowerCase() && ("checkbox" === t.type || "radio" === t.type) && (i = Un);
                 if (i && (i = i(e, a)))
                     return An(i, r, n);
                 l && l(e, t, a),
@@ -48480,7 +49051,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             , it = !1;
         function lt(e, a) {
             var r = a.window === a ? a.document : 9 === a.nodeType ? a : a.ownerDocument;
-            return it || null == nt || nt !== Wr(r) ? null : ("selectionStart" in (r = nt) && Jr(r) ? r = {
+            return it || null == nt || nt !== Wr(r) ? null : ("selectionStart" in (r = nt) && Ur(r) ? r = {
                 start: r.selectionStart,
                 end: r.selectionEnd
             } : r = {
@@ -48687,11 +49258,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     throw Error(i(332))
             }
         }
-        function Jt(e, a) {
+        function Ut(e, a) {
             return e = It(e),
                 Bt(e, a)
         }
-        function Ut(e, a, r) {
+        function Jt(e, a, r) {
             return e = It(e),
                 _t(e, a, r)
         }
@@ -48714,7 +49285,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 var e = 0;
                 try {
                     var a = Ft;
-                    Jt(99, function () {
+                    Ut(99, function () {
                         for (; e < a.length; e++) {
                             var r = a[e];
                             do {
@@ -49099,7 +49670,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     a
             }
             function s(e, a, r, n) {
-                return null === a || 6 !== a.tag ? ((a = Js(r, e.mode, n)).return = e,
+                return null === a || 6 !== a.tag ? ((a = Us(r, e.mode, n)).return = e,
                     a) : ((a = t(a, r)).return = e,
                         a)
             }
@@ -49111,7 +49682,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         n)
             }
             function c(e, a, r, n) {
-                return null === a || 4 !== a.tag || a.stateNode.containerInfo !== r.containerInfo || a.stateNode.implementation !== r.implementation ? ((a = Us(r, e.mode, n)).return = e,
+                return null === a || 4 !== a.tag || a.stateNode.containerInfo !== r.containerInfo || a.stateNode.implementation !== r.implementation ? ((a = Js(r, e.mode, n)).return = e,
                     a) : ((a = t(a, r.children || [])).return = e,
                         a)
             }
@@ -49122,7 +49693,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             }
             function h(e, a, r) {
                 if ("string" == typeof a || "number" == typeof a)
-                    return (a = Js("" + a, e.mode, r)).return = e,
+                    return (a = Us("" + a, e.mode, r)).return = e,
                         a;
                 if ("object" == typeof a && null !== a) {
                     switch (a.$$typeof) {
@@ -49131,7 +49702,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 r.return = e,
                                 r;
                         case G:
-                            return (a = Us(a, e.mode, r)).return = e,
+                            return (a = Js(a, e.mode, r)).return = e,
                                 a
                     }
                     if (Lo(a) || Z(a))
@@ -49299,7 +49870,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     a(e, n),
                                         n = n.sibling
                                 }
-                                (n = Us(o, e.mode, s)).return = e,
+                                (n = Js(o, e.mode, s)).return = e,
                                     e = n
                             }
                             return l(e)
@@ -49309,7 +49880,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         null !== n && 6 === n.tag ? (r(e, n.sibling),
                             (n = t(n, o)).return = e,
                             e = n) : (r(e, n),
-                                (n = Js(o, e.mode, s)).return = e,
+                                (n = Us(o, e.mode, s)).return = e,
                                 e = n),
                         l(e);
                 if (Lo(o))
@@ -49376,10 +49947,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             Fo.current === e && (dt(xo),
                 dt(Fo))
         }
-        var Jo = {
+        var Uo = {
             current: 0
         };
-        function Uo(e) {
+        function Jo(e) {
             for (var a = e; null !== a;) {
                 if (13 === a.tag) {
                     var r = a.memoizedState;
@@ -49936,7 +50507,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 }
                                 a--
                             } else
-                                r !== Ur && r !== Yr && r !== Zr || a++
+                                r !== Jr && r !== Yr && r !== Zr || a++
                         }
                         e = e.nextSibling
                     }
@@ -49967,14 +50538,14 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         e.expirationTime <= t && (e.expirationTime = 0),
                         sl(e, a, t))
         }
-        function Ji(e, a, r, n, t, o) {
+        function Ui(e, a, r, n, t, o) {
             if (null === e) {
                 var i = r.type;
                 return "function" != typeof i || Ws(i) || void 0 !== i.defaultProps || null !== r.compare || void 0 !== r.defaultProps ? ((e = Vs(r.type, null, n, null, a.mode, o)).ref = a.ref,
                     e.return = a,
                     a.child = e) : (a.tag = 15,
                         a.type = i,
-                        Ui(e, a, i, n, t, o))
+                        Ji(e, a, i, n, t, o))
             }
             return i = e.child,
                 t < o && (t = i.memoizedProps,
@@ -49983,7 +50554,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         e.return = a,
                         a.child = e)
         }
-        function Ui(e, a, r, n, t, o) {
+        function Ji(e, a, r, n, t, o) {
             return null !== e && et(e.memoizedProps, n) && e.ref === a.ref && (ji = !1,
                 t < o) ? sl(e, a, o) : Zi(e, a, r, n, o)
         }
@@ -50100,11 +50671,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             retryTime: 0
         };
         function tl(e, a, r) {
-            var n, t = a.mode, o = a.pendingProps, i = Jo.current, l = !1;
+            var n, t = a.mode, o = a.pendingProps, i = Uo.current, l = !1;
             if ((n = 0 != (64 & a.effectTag)) || (n = 0 != (2 & i) && (null === e || null !== e.memoizedState)),
                 n ? (l = !0,
                     a.effectTag &= -65) : null !== e && null === e.memoizedState || void 0 === o.fallback || !0 === o.unstable_avoidThisFallback || (i |= 1),
-                ht(Jo, 1 & i),
+                ht(Uo, 1 & i),
                 null === e) {
                 if (void 0 !== o.fallback && xi(a),
                     l) {
@@ -50196,7 +50767,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 , t = n.revealOrder
                 , o = n.tail;
             if (Vi(e, a, n.children, r),
-                0 != (2 & (n = Jo.current)))
+                0 != (2 & (n = Uo.current)))
                 n = 1 & n | 2,
                     a.effectTag |= 64;
             else {
@@ -50223,7 +50794,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }
                 n &= 1
             }
-            if (ht(Jo, n),
+            if (ht(Uo, n),
                 0 == (2 & a.mode))
                 a.memoizedState = null;
             else
@@ -50231,7 +50802,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     case "forwards":
                         for (r = a.child,
                             t = null; null !== r;)
-                            null !== (e = r.alternate) && null === Uo(e) && (t = r),
+                            null !== (e = r.alternate) && null === Jo(e) && (t = r),
                                 r = r.sibling;
                         null === (r = t) ? (t = a.child,
                             a.child = null) : (t = r.sibling,
@@ -50242,7 +50813,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         for (r = null,
                             t = a.child,
                             a.child = null; null !== t;) {
-                            if (null !== (e = t.alternate) && null === Uo(e)) {
+                            if (null !== (e = t.alternate) && null === Jo(e)) {
                                 a.child = t;
                                 break
                             }
@@ -50317,11 +50888,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     return Io(e),
                         null;
                 case 13:
-                    return dt(Jo),
+                    return dt(Uo),
                         4096 & (a = e.effectTag) ? (e.effectTag = -4097 & a | 64,
                             e) : null;
                 case 19:
-                    return dt(Jo),
+                    return dt(Uo),
                         null;
                 case 4:
                     return jo(),
@@ -50516,7 +51087,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 case 15:
                     if (null !== (e = a.updateQueue) && null !== (e = e.lastEffect)) {
                         var n = e.next;
-                        Jt(97 < r ? 97 : r, function () {
+                        Ut(97 < r ? 97 : r, function () {
                             var e = n;
                             do {
                                 var r = e.destroy;
@@ -50873,7 +51444,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             ),
                 r
         }
-        var Rl, Dl = Math.ceil, Tl = E.ReactCurrentDispatcher, Ll = E.ReactCurrentOwner, El = 0, zl = 8, Hl = 16, Al = 32, Gl = 0, Kl = 1, xl = 2, Fl = 3, Nl = 4, Ol = 5, Wl = El, jl = null, Vl = null, Il = 0, Jl = Gl, Ul = null, ql = 1073741823, Zl = 1073741823, Yl = null, Ql = 0, $l = !1, Xl = 0, es = 500, as = null, rs = !1, ns = null, ts = null, os = !1, is = null, ls = 90, ss = null, us = 0, cs = null, ds = 0;
+        var Rl, Dl = Math.ceil, Tl = E.ReactCurrentDispatcher, Ll = E.ReactCurrentOwner, El = 0, zl = 8, Hl = 16, Al = 32, Gl = 0, Kl = 1, xl = 2, Fl = 3, Nl = 4, Ol = 5, Wl = El, jl = null, Vl = null, Il = 0, Ul = Gl, Jl = null, ql = 1073741823, Zl = 1073741823, Yl = null, Ql = 0, $l = !1, Xl = 0, es = 500, as = null, rs = !1, ns = null, ts = null, os = !1, is = null, ls = 90, ss = null, us = 0, cs = null, ds = 0;
         function hs() {
             return (Wl & (Hl | Al)) !== El ? 1073741821 - (jt() / 10 | 0) : 0 !== ds ? ds : ds = 1073741821 - (jt() / 10 | 0)
         }
@@ -50940,7 +51511,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     n = n.return
                 }
             return null !== t && (jl === t && (Bs(a),
-                Jl === Nl && Ys(t, Il)),
+                Ul === Nl && Ys(t, Il)),
                 Qs(t, a)),
                 t
         }
@@ -50971,7 +51542,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     }
                     e.callbackExpirationTime = a,
                         e.callbackPriority = n,
-                        a = 1073741823 === a ? qt(bs.bind(null, e)) : Ut(n, function e(a, r) {
+                        a = 1073741823 === a ? qt(bs.bind(null, e)) : Jt(n, function e(a, r) {
                             ds = 0;
                             if (r)
                                 return r = hs(),
@@ -50998,8 +51569,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     if (to(),
                                         Wl = t,
                                         Tl.current = o,
-                                        Jl === Kl)
-                                        throw r = Ul,
+                                        Ul === Kl)
+                                        throw r = Jl,
                                         Ss(a, n),
                                         Ys(a, n),
                                         ys(a),
@@ -51007,7 +51578,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                     if (null === Vl)
                                         switch (o = a.finishedWork = a.current.alternate,
                                         a.finishedExpirationTime = n,
-                                        t = Jl,
+                                        t = Ul,
                                         jl = null,
                                         t) {
                                             case Gl:
@@ -51122,8 +51693,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     if (to(),
                         Wl = r,
                         Tl.current = n,
-                        Jl === Kl)
-                        throw r = Ul,
+                        Ul === Kl)
+                        throw r = Jl,
                         Ss(e, a),
                         Ys(e, a),
                         ys(e),
@@ -51184,7 +51755,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             break;
                         case 13:
                         case 19:
-                            dt(Jo);
+                            dt(Uo);
                             break;
                         case 10:
                             io(n)
@@ -51194,8 +51765,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             jl = e,
                 Vl = js(e.current, null),
                 Il = a,
-                Jl = Gl,
-                Ul = null,
+                Ul = Gl,
+                Jl = null,
                 Zl = ql = 1073741823,
                 Yl = null,
                 Ql = 0,
@@ -51207,8 +51778,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     if (to(),
                         mi(),
                         null === Vl || null === Vl.return)
-                        return Jl = Kl,
-                            Ul = a,
+                        return Ul = Kl,
+                            Jl = a,
                             null;
                     e: {
                         var r = e
@@ -51220,7 +51791,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             t.firstEffect = t.lastEffect = null,
                             null !== o && "object" == typeof o && "function" == typeof o.then) {
                             var i = o
-                                , l = 0 != (1 & Jo.current)
+                                , l = 0 != (1 & Uo.current)
                                 , s = n;
                             do {
                                 var u;
@@ -51274,7 +51845,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 s = s.return
                             } while (null !== s); o = Error((Y(t.type) || "A React component") + " suspended while rendering, but no fallback UI was specified.\n\nAdd a <Suspense fallback=...> component higher in the tree to provide a loading indicator or placeholder to display." + Q(t))
                         }
-                        Jl !== Ol && (Jl = xl),
+                        Ul !== Ol && (Ul = xl),
                             o = hl(o, t),
                             s = n;
                         do {
@@ -51581,7 +52152,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             case 11:
                                 break;
                             case 13:
-                                if (dt(Jo),
+                                if (dt(Uo),
                                     o = a.memoizedState,
                                     0 != (64 & a.effectTag)) {
                                     a.expirationTime = n;
@@ -51594,7 +52165,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                             n.nextEffect = c) : (a.firstEffect = a.lastEffect = n,
                                                 n.nextEffect = null),
                                             n.effectTag = 8)),
-                                    o && !l && 0 != (2 & a.mode) && (null === r && !0 !== a.memoizedProps.unstable_avoidThisFallback || 0 != (1 & Jo.current) ? Jl === Gl && (Jl = Fl) : (Jl !== Gl && Jl !== Fl || (Jl = Nl),
+                                    o && !l && 0 != (2 & a.mode) && (null === r && !0 !== a.memoizedProps.unstable_avoidThisFallback || 0 != (1 & Uo.current) ? Ul === Gl && (Ul = Fl) : (Ul !== Gl && Ul !== Fl || (Ul = Nl),
                                         0 !== Ql && null !== jl && (Ys(jl, Il),
                                             Qs(jl, Ql)))),
                                     (o || l) && (a.effectTag |= 4);
@@ -51617,16 +52188,16 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 bt(a.type) && kt();
                                 break;
                             case 19:
-                                if (dt(Jo),
+                                if (dt(Uo),
                                     null === (o = a.memoizedState))
                                     break;
                                 if (l = 0 != (64 & a.effectTag),
                                     null === (c = o.rendering)) {
                                     if (l)
                                         cl(o, !1);
-                                    else if (Jl !== Gl || null !== r && 0 != (64 & r.effectTag))
+                                    else if (Ul !== Gl || null !== r && 0 != (64 & r.effectTag))
                                         for (r = a.child; null !== r;) {
-                                            if (null !== (c = Uo(r))) {
+                                            if (null !== (c = Jo(r))) {
                                                 for (a.effectTag |= 64,
                                                     cl(o, !1),
                                                     null !== (l = c.updateQueue) && (a.updateQueue = l,
@@ -51659,7 +52230,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                                                     responders: r.responders
                                                                 }),
                                                         l = l.sibling;
-                                                ht(Jo, 1 & Jo.current | 2),
+                                                ht(Uo, 1 & Uo.current | 2),
                                                     a = a.child;
                                                 break e
                                             }
@@ -51667,7 +52238,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         }
                                 } else {
                                     if (!l)
-                                        if (null !== (r = Uo(c))) {
+                                        if (null !== (r = Jo(c))) {
                                             if (a.effectTag |= 64,
                                                 l = !0,
                                                 null !== (n = r.updateQueue) && (a.updateQueue = n,
@@ -51693,8 +52264,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         o.tail = n.sibling,
                                         o.lastEffect = a.lastEffect,
                                         n.sibling = null,
-                                        o = Jo.current,
-                                        ht(Jo, o = l ? 1 & o | 2 : 1 & o),
+                                        o = Uo.current,
+                                        ht(Uo, o = l ? 1 & o | 2 : 1 & o),
                                         a = n;
                                     break e
                                 }
@@ -51733,7 +52304,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 if (null !== (a = Vl.sibling))
                     return a;
                 Vl = e
-            } while (null !== Vl); return Jl === Gl && (Jl = Ol),
+            } while (null !== Vl); return Ul === Gl && (Ul = Ol),
                 null
         }
         function Ts(e) {
@@ -51742,7 +52313,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         }
         function Ls(e) {
             var a = Vt();
-            return Jt(99, function (e, a) {
+            return Ut(99, function (e, a) {
                 do {
                     zs()
                 } while (null !== is); if ((Wl & (Hl | Al)) !== El)
@@ -51774,7 +52345,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         Ll.current = null,
                         Qr = wr;
                     var l = Ir();
-                    if (Jr(l)) {
+                    if (Ur(l)) {
                         if ("selectionStart" in l)
                             var s = {
                                 start: l.selectionStart,
@@ -51901,7 +52472,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         S !== v && v && v.ownerDocument && function e(a, r) {
                             return !(!a || !r) && (a === r || (!a || 3 !== a.nodeType) && (r && 3 === r.nodeType ? e(a, r.parentNode) : "contains" in a ? a.contains(r) : !!a.compareDocumentPosition && !!(16 & a.compareDocumentPosition(r))))
                         }(v.ownerDocument.documentElement, v)) {
-                        null !== s && Jr(v) && (S = s.start,
+                        null !== s && Ur(v) && (S = s.start,
                             void 0 === (M = s.end) && (M = S),
                             "selectionStart" in v ? (v.selectionStart = S,
                                 v.selectionEnd = Math.min(M, v.value.length)) : (M = (S = v.ownerDocument || document) && S.defaultView || window).getSelection && (M = M.getSelection(),
@@ -52062,7 +52633,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 var e = as.effectTag;
                 0 != (256 & e) && gl(as.alternate, as),
                     0 == (512 & e) || os || (os = !0,
-                        Ut(97, function () {
+                        Jt(97, function () {
                             return zs(),
                                 null
                         })),
@@ -52073,7 +52644,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             if (90 !== ls) {
                 var e = 97 < ls ? 97 : ls;
                 return ls = 90,
-                    Jt(e, Hs)
+                    Ut(e, Hs)
             }
         }
         function Hs() {
@@ -52136,7 +52707,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         function Ks(e, a, r) {
             var n = e.pingCache;
             null !== n && n.delete(a),
-                jl === e && Il === r ? Jl === Nl || Jl === Fl && 1073741823 === ql && jt() - Xl < es ? Ss(e, Il) : $l = !0 : Zs(e, r) && (0 !== (a = e.lastPingedTime) && a < r || (e.lastPingedTime = r,
+                jl === e && Il === r ? Ul === Nl || Ul === Fl && 1073741823 === ql && jt() - Xl < es ? Ss(e, Il) : $l = !0 : Zs(e, r) && (0 !== (a = e.lastPingedTime) && a < r || (e.lastPingedTime = r,
                     e.finishedExpirationTime === r && (e.finishedExpirationTime = 0,
                         e.finishedWork = null),
                     ys(e)))
@@ -52172,9 +52743,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 break;
                             case 13:
                                 if (null !== a.memoizedState)
-                                    return 0 !== (n = a.child.childExpirationTime) && n >= r ? tl(e, a, r) : (ht(Jo, 1 & Jo.current),
+                                    return 0 !== (n = a.child.childExpirationTime) && n >= r ? tl(e, a, r) : (ht(Uo, 1 & Uo.current),
                                         null !== (a = sl(e, a, r)) ? a.sibling : null);
-                                ht(Jo, 1 & Jo.current);
+                                ht(Uo, 1 & Uo.current);
                                 break;
                             case 19:
                                 if (n = a.childExpirationTime >= r,
@@ -52185,7 +52756,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 }
                                 if (null !== (t = a.memoizedState) && (t.rendering = null,
                                     t.tail = null),
-                                    ht(Jo, Jo.current),
+                                    ht(Uo, Uo.current),
                                     !n)
                                     return null
                         }
@@ -52260,7 +52831,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         if (null != e) {
                             if ((e = e.$$typeof) === j)
                                 return 11;
-                            if (e === J)
+                            if (e === U)
                                 return 14
                         }
                         return 2
@@ -52277,7 +52848,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             a = Ii(null, a, t, e, r);
                             break;
                         case 14:
-                            a = Ji(null, a, t, Xt(t.type, e), n, r);
+                            a = Ui(null, a, t, Xt(t.type, e), n, r);
                             break;
                         default:
                             throw Error(i(306, t, ""))
@@ -52413,9 +52984,9 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         a.child;
                 case 14:
                     return o = Xt(t = a.type, a.pendingProps),
-                        Ji(e, a, t, o = Xt(t.type, o), n, r);
+                        Ui(e, a, t, o = Xt(t.type, o), n, r);
                 case 15:
-                    return Ui(e, a, a.type, a.pendingProps, n, r);
+                    return Ji(e, a, a.type, a.pendingProps, n, r);
                 case 17:
                     return n = a.type,
                         t = a.pendingProps,
@@ -52531,10 +53102,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                 case j:
                                     l = 11;
                                     break e;
-                                case J:
+                                case U:
                                     l = 14;
                                     break e;
-                                case U:
+                                case J:
                                     l = 16,
                                         n = null;
                                     break e
@@ -52550,11 +53121,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             return (e = Os(7, e, n, a)).expirationTime = r,
                 e
         }
-        function Js(e, a, r) {
+        function Us(e, a, r) {
             return (e = Os(6, e, null, a)).expirationTime = r,
                 e
         }
-        function Us(e, a, r) {
+        function Js(e, a, r) {
             return (a = Os(4, null !== e.children ? e.children : [], e.key, a)).expirationTime = r,
                 a.stateNode = {
                     containerInfo: e.containerInfo,
@@ -52803,7 +53374,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 var t = Wl;
                 Wl |= 4;
                 try {
-                    return Jt(98, e.bind(null, a, r, n))
+                    return Ut(98, e.bind(null, a, r, n))
                 } finally {
                     (Wl = t) === El && Zt()
                 }
@@ -52887,7 +53458,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 var r = Wl;
                 Wl |= 1;
                 try {
-                    return Jt(99, e.bind(null, a))
+                    return Ut(99, e.bind(null, a))
                 } finally {
                     Wl = r,
                         Zt()
@@ -56956,7 +57527,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                 return window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
             };
             function N(e, a, r, n, t, o, i) {
-                for (var l = V(r), s = l.width, u = l.height, c = V(a), d = c.width, h = c.height, m = I(e, a, o), f = m.mouseX, p = m.mouseY, g = J(o, d, h, s, u), y = U(i), b = y.extraOffset_X, k = y.extraOffset_Y, v = window.innerWidth, S = window.innerHeight, M = q(r), w = M.parentTop, C = M.parentLeft, B = function (e) {
+                for (var l = V(r), s = l.width, u = l.height, c = V(a), d = c.width, h = c.height, m = I(e, a, o), f = m.mouseX, p = m.mouseY, g = U(o, d, h, s, u), y = J(i), b = y.extraOffset_X, k = y.extraOffset_Y, v = window.innerWidth, S = window.innerHeight, M = q(r), w = M.parentTop, C = M.parentLeft, B = function (e) {
                     var a = g[e].l;
                     return f + a + b
                 }, _ = function (e) {
@@ -57021,7 +57592,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         mouseX: o + l / 2,
                         mouseY: t + s / 2
                     }
-            }, J = function (e, a, r, n, t) {
+            }, U = function (e, a, r, n, t) {
                 var o, i, l, s;
                 return "float" === e ? (o = {
                     l: -n / 2,
@@ -57076,7 +57647,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                     left: s,
                     right: i
                 }
-            }, U = function (e) {
+            }, J = function (e) {
                 var a = 0
                     , r = 0;
                 for (var n in "[object String]" === Object.prototype.toString.apply(e) && (e = JSON.parse(e.toString().replace(/\'/g, '"'))),
@@ -65434,7 +66005,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
     }],
     821: [function (e, a, r) {
         a.exports = {
-            _args: [["websocket@1.0.31", "/Users/Liuzq/project/node/vroom/app"]],
+            _args: [["websocket@1.0.31", "/data/class/app"]],
             _from: "websocket@1.0.31",
             _id: "websocket@1.0.31",
             _inBundle: !1,
@@ -65455,7 +66026,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             _requiredBy: ["/protoo-client"],
             _resolved: "https://registry.npmjs.org/websocket/-/websocket-1.0.31.tgz",
             _spec: "1.0.31",
-            _where: "/Users/Liuzq/project/node/vroom/app",
+            _where: "/data/class/app",
             author: {
                 name: "Brian McKelvey",
                 email: "theturtle32@gmail.com",
@@ -65973,7 +66544,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
     824: [function (e, a, r) {
         a.exports = {
             name: "shinevv-vvclass-app",
-            version: "1.4.20",
+            version: "1.6.0",
             private: !0,
             description: "shinevv vvclass app",
             author: "vvclass <huojianwei@shinevv.com>",
