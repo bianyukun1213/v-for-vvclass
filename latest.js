@@ -8300,7 +8300,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                             key: "handleMoveMemberToStudent",
                             value: function (e) {
                                 //修改过的代码。
-                                if (0 == this.props.room.allAudioMute || 0 == this.props.room.allVideoDisabled) {
+                                if (0 == this.props.room.allAudioMute && 0 == this.props.room.allVideoDisabled) {
                                     this.props.notifyWarn("禁音禁视状态下不可以进行切换");
                                     return;
                                 }
