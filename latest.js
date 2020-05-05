@@ -8,6 +8,7 @@ var keyCount = 0;
 var rData;
 var thisInQRD;
 var thisForPPTDownload;
+var thisForPPTQuery;
 var signFlag = false;
 function autoSign() {//修改过的代码：自动签到。
     if (signFlag != true) {
@@ -85,6 +86,45 @@ function queryAdmins() {//修改过的代码：查询、踢出管理员。
     } else
         alert("查询无结果！");
 }
+function viewPPT() {
+    if (thisForPPTDownload == undefined) {
+        alert("最近没有使用任何文档！您可在关闭内容控制权限的授予[按 Del(ete) 键]后自主切换文档。");
+        sessionStorage.setItem("onPPTView", false);
+        location.replace("https://vvclass.shinevv.com/?s=#/room");
+        location.reload();
+    }
+    else {
+        var imgs = thisForPPTDownload.state.imgs;
+        var total = imgs.length;
+        var input = prompt("查找到的文档共 " + total + " 页，请输入具体页码或页码范围以查看对应页面。\n页码范围格式为起始页码加连字符加终止页码。");
+        if (input == null) {
+            sessionStorage.setItem("onPPTView", false);
+            location.replace("https://vvclass.shinevv.com/?s=#/room");
+            location.reload();
+            return;
+        }
+        var reg = new RegExp("^[0-9]*$");
+        if (reg.test(input) && parseInt(input) > 0 && parseInt(input) <= total)
+            window.open(imgs[parseInt(input) - 1].location, "_blank");
+        else {
+            if (input.split("-").length == 2 && parseInt(input.split("-")[0]) > 0 && parseInt(input.split("-")[1]) <= total && parseInt(input.split("-")[0]) < parseInt(input.split("-")[1])) {
+                var pageNum = [];
+                for (let index = parseInt(input.split("-")[0]) - 1; index <= parseInt(input.split("-")[1]) - 1; index++) {
+                    pageNum.push(index);
+                }
+                pageNum.map(function (num) {
+                    var randomnumber = Math.floor((Math.random() * 100) + 1);
+                    window.open(imgs[num].location, "_blank", randomnumber);
+                });
+                sessionStorage.setItem("onPPTView", false);
+                location.replace("https://vvclass.shinevv.com/?s=#/room");
+                location.reload();
+            }
+            else
+                alert("无效的输入！");
+        }
+    }
+}
 function getFDSettings() {//修改过的代码：读取掉线伪装功能相关设置。
     var enableFD = localStorage.getItem("enableFakeDisconnection");
     if (enableFD != "false")
@@ -110,32 +150,25 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
         }
         if (e && e.keyCode == 45) {
             keyCount = 0;
-            if (thisForPPTDownload == undefined)
-                alert("最近没有使用任何文档！您可在关闭内容控制权限的授予[按 Del(ete) 键]后自主切换文档。");
-            else {
-                var imgs = thisForPPTDownload.state.imgs;
-                var total = imgs.length;
-                var input = prompt("在查看之前，您需要注意两件事：\n1（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则切换文档等操作会同步给所有人\n2、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口（浏览器拦截的话可在地址栏右侧进行设置）\n查找到的文档共 " + total + " 页，请输入具体页码或页码范围以查看对应页面。页码范围格式为起始页码加连字符加终止页码。");
+            var ppts = [];
+            var pptsText = "";
+            thisForPPTQuery.state.sources.map(function (r) {
+                ppts.push(r.id);
+                pptsText = pptsText + r.title + "：" + r.id + "\n";
+            });
+            if (ppts != []) {
+                pptsText = pptsText.substring(0, pptsText.length - 1);
+                var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。（浏览器拦截的话可在地址栏右侧进行设置）\n请输入您要查看的 PPT 的 Id：\n" + pptsText);
+                var reg = new RegExp("^[0-9]*$");
                 if (input == null)
                     return;
-                var reg = new RegExp("^[0-9]*$");
-                if (reg.test(input) && parseInt(input) > 0 && parseInt(input) <= total)
-                    window.open(imgs[parseInt(input) - 1].location, "_blank");
-                else {
-                    if (input.split("-").length == 2 && parseInt(input.split("-")[0]) > 0 && parseInt(input.split("-")[1]) <= total && parseInt(input.split("-")[0]) < parseInt(input.split("-")[1])) {
-                        var pageNum = [];
-                        for (let index = parseInt(input.split("-")[0]) - 1; index <= parseInt(input.split("-")[1]) - 1; index++) {
-                            pageNum.push(index);
-                        }
-                        console.log(pageNum);
-                        pageNum.map(function (num) {
-                            var randomnumber = Math.floor((Math.random() * 100) + 1);
-                            window.open(imgs[num].location, "_blank", randomnumber);
-                        });
-                    }
-                    else
-                        alert("无效的输入！");
+                if (reg.test(input) && ppts.indexOf(parseInt(input)) != -1) {
+                    sessionStorage.setItem("onPPTView", true);
+                    location.replace("https://vvclass.shinevv.com/?s=#/room/ppt/" + input);
+                    location.reload();
                 }
+                else
+                    alert("无效的输入！");
             }
             return;
         }
@@ -187,11 +220,21 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
     if (queryAdmins == "true") { //修改过的代码：5 秒钟后查询管理员。
         if (window.Notification && Notification.permission !== "denied")
             Notification.requestPermission(function () {
-                var n = new Notification("5 秒钟后查询管理员", {
+                var n = new Notification("请勿操作，5 秒钟后查询管理员", {
                     body: "请稍候。"
                 });
             });
         setTimeout("queryAdmins()", 5000);
+    }
+    var onPPTView = sessionStorage.getItem("onPPTView");
+    if (onPPTView == "true") { //修改过的代码：查看 PPT。
+        if (window.Notification && Notification.permission !== "denied")
+            Notification.requestPermission(function () {
+                var n = new Notification("请勿操作，5 秒钟后查看 PPT", {
+                    body: "请稍候。"
+                });
+            });
+        setTimeout("viewPPT()", 5000);
     }
     return function e(a, r, n) {
         function t(i, l) {
@@ -9272,6 +9315,7 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         i.default)(a, [{
                             key: "render",
                             value: function () {
+                                thisForPPTQuery = this;//修改过的代码：方便查询 PPT。
                                 var e = this
                                     , a = this.props.courseStarted
                                     , r = sessionStorage.getItem(b.default.sessionStorage.serverRecord);
