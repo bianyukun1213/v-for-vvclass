@@ -153,9 +153,10 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             var ppts = [];
             var pptsText = "";
             thisForPPTQuery.state.sources.map(function (r) {
-                ppts.push(r.id);
+                ppts.push(parseInt(r.id));//这里用 parseInt() 是因为老师上传文件而你不刷新的话，获取到的会是字符串格式。
                 pptsText = pptsText + r.title + "：" + r.id + "\n";
             });
+            console.log(ppts);
             if (ppts != []) {
                 pptsText = pptsText.substring(0, pptsText.length - 1);
                 var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。（浏览器拦截的话可在地址栏右侧进行设置）\n请输入您要查看的 PPT 的 Id：\n" + pptsText);
@@ -9581,8 +9582,8 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                         }, {
                             key: "onChangeFile",
                             value: function (e) {
-                                alert("使用助手时请勿上传文件，否则将无法删除！");//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
-                                return;
+                                // alert("使用助手时请勿上传文件，否则将无法删除！");//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
+                                // return;
                                 if (this.state.maxSize < this.state.nowSize)
                                     return alert("容量不足");
                                 var a = this.props.room.roomId;
