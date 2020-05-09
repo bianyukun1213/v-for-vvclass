@@ -9440,7 +9440,10 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                                         e.uploadFileNode = a
                                     },
                                     accept: "image/jpeg,image/png,image/gif,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,video/mp4,video/webm,audio/mpeg,audio/x-wav",
-                                    onChange: this.onChangeFile.bind(this)
+                                    onClick: function () {
+                                        alert("使用助手时请不要上传文件，因为在 Token 不正确的情况下，您将无法成功删除文件！");
+                                    }//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
+                                    //onChange: this.onChangeFile.bind(this)
                                 }), u.default.createElement("a", {
                                     className: "noselect",
                                     title: "上传"
@@ -9595,25 +9598,23 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                         }, {
                             key: "onChangeFile",
                             value: function (e) {
-                                if (confirm("请谨慎上传文件！若您无法提供正确的 Token（正常登录到此房间时取得），将无法成功删除文件！\n您确定要继续？")) {//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
-                                    if (this.state.maxSize < this.state.nowSize)
-                                        return alert("容量不足");
-                                    var a = this.props.room.roomId;
-                                    if (!a)
-                                        return m.hashHistory.push(b.default.router.login);
-                                    var r = new FormData
-                                        , n = e.target.files[0];
-                                    if (n.size > 209715200)
-                                        this.props.notify("文件大小不能超过200MB");
-                                    else {
-                                        S.debug("upload file, filesize: %d", n.size),
-                                            r.append("file", n),
-                                            this.setState({
-                                                uploading: !0
-                                            });
-                                        var t = b.default.api.server + "/api/room/" + a + "/upload";
-                                        this.uploadFile(t, r)
-                                    }
+                                if (this.state.maxSize < this.state.nowSize)
+                                    return alert("容量不足");
+                                var a = this.props.room.roomId;
+                                if (!a)
+                                    return m.hashHistory.push(b.default.router.login);
+                                var r = new FormData
+                                    , n = e.target.files[0];
+                                if (n.size > 209715200)
+                                    this.props.notify("文件大小不能超过200MB");
+                                else {
+                                    S.debug("upload file, filesize: %d", n.size),
+                                        r.append("file", n),
+                                        this.setState({
+                                            uploading: !0
+                                        });
+                                    var t = b.default.api.server + "/api/room/" + a + "/upload";
+                                    this.uploadFile(t, r)
                                 }
                             }
                         }, {
