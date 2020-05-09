@@ -87,8 +87,8 @@ function queryAdmins() {//修改过的代码：查询、踢出管理员。
         alert("查询无结果！");
 }
 function viewPPT() {
-    if (thisForPPTDownload == undefined) {
-        alert("最近没有使用任何文档！您可在关闭内容控制权限的授予[按 Del(ete) 键]后自主切换文档。");
+    if (thisForPPTDownload == undefined || thisForPPTDownload.state.imgs == undefined) {
+        alert("无法获取该文档，该文档可能已被删除！");
         location.replace("https://vvclass.shinevv.com/?s=#/room");
         location.reload();
     }
@@ -162,9 +162,9 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                 ppts.push(parseInt(r.id));//这里用 parseInt() 是因为老师上传文件而你不刷新的话，获取到的会是字符串格式。
                 pptsText = pptsText + r.title + "：" + r.id + "\n";
             });
-            if (ppts != []) {
+            if (ppts.length != 0) {
                 pptsText = pptsText.substring(0, pptsText.length - 1);
-                var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。（浏览器拦截的话可在地址栏右侧进行设置）\n请输入您要查看的 PPT 的 Id：\n" + pptsText);
+                var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。（浏览器拦截的话可在地址栏右侧进行设置）\n请输入您要查看的文档的 Id：\n" + pptsText);
                 var reg = new RegExp("^[0-9]*$");
                 if (input == null)
                     return;
@@ -172,7 +172,7 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                     location.replace("https://vvclass.shinevv.com/?s=#/room/ppt/" + input);
                     if (window.Notification && Notification.permission !== "denied")
                         Notification.requestPermission(function () {
-                            var n = new Notification("请勿操作，5 秒钟后查看 PPT", {
+                            var n = new Notification("请勿操作，5 秒钟后查看文档", {
                                 body: "请稍候。"
                             });
                         });
@@ -180,6 +180,8 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                 }
                 else
                     alert("无效的输入！");
+            } else {
+                alert("未查找到文档！");
             }
             return;
         }
@@ -9593,25 +9595,25 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                         }, {
                             key: "onChangeFile",
                             value: function (e) {
-                                // alert("使用助手时请勿上传文件，否则将无法删除！");//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
-                                // return;
-                                if (this.state.maxSize < this.state.nowSize)
-                                    return alert("容量不足");
-                                var a = this.props.room.roomId;
-                                if (!a)
-                                    return m.hashHistory.push(b.default.router.login);
-                                var r = new FormData
-                                    , n = e.target.files[0];
-                                if (n.size > 209715200)
-                                    this.props.notify("文件大小不能超过200MB");
-                                else {
-                                    S.debug("upload file, filesize: %d", n.size),
-                                        r.append("file", n),
-                                        this.setState({
-                                            uploading: !0
-                                        });
-                                    var t = b.default.api.server + "/api/room/" + a + "/upload";
-                                    this.uploadFile(t, r)
+                                if (confirm("请谨慎上传文件！若您无法提供正确的 Token（正常登录到此房间时取得），将无法成功删除文件！\n您确定要继续？")) {//修改过的代码：惨痛代价，若不是焦哥，差点社会性死亡！
+                                    if (this.state.maxSize < this.state.nowSize)
+                                        return alert("容量不足");
+                                    var a = this.props.room.roomId;
+                                    if (!a)
+                                        return m.hashHistory.push(b.default.router.login);
+                                    var r = new FormData
+                                        , n = e.target.files[0];
+                                    if (n.size > 209715200)
+                                        this.props.notify("文件大小不能超过200MB");
+                                    else {
+                                        S.debug("upload file, filesize: %d", n.size),
+                                            r.append("file", n),
+                                            this.setState({
+                                                uploading: !0
+                                            });
+                                        var t = b.default.api.server + "/api/room/" + a + "/upload";
+                                        this.uploadFile(t, r)
+                                    }
                                 }
                             }
                         }, {
