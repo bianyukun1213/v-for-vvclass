@@ -131,9 +131,16 @@ function getFDSettings() {//修改过的代码：读取掉线伪装功能相关�
     else
         return false;
 }
-function getCCSettings() {//修改过的代码：读取掉内容控制权限相关设置。
+function getCCSettings() {//修改过的代码：读取内容控制权限相关设置。
     var enableCC = localStorage.getItem("enableContentControl");
     if (enableCC != "false")
+        return true;
+    else
+        return false;
+}
+function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相关设置。
+    var enableVideo = localStorage.getItem("enableVideo");
+    if (enableVideo != "false")
         return true;
     else
         return false;
@@ -194,6 +201,17 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
             }
             else {
                 localStorage.setItem("enableContentControl", true);
+            }
+            location.reload();
+            return;
+        }
+        if (e && e.keyCode == 34) {
+            keyCount = 0;
+            if (getVideoSettings()) {
+                localStorage.setItem("enableVideo", false);
+            }
+            else {
+                localStorage.setItem("enableVideo", true);
             }
             location.reload();
             return;
@@ -10439,11 +10457,11 @@ function getCCSettings() {//修改过的代码：读取掉内容控制权限相�
                                         }
                                     }) : s.default.createElement("span", {
                                         className: "display-name"
-                                    }, n.displayName))), s.default.createElement("video", {
+                                    }, (n.role == "teacher" || n.role == "tutor") && !getVideoSettings() ? n.displayName + "（视频已屏蔽）" : n.displayName))), s.default.createElement("video", {//修改过的代码：显示教师视频屏蔽状态。
                                         ref: "video",
                                         className: (0,
                                             c.default)({
-                                                hidden: !f,
+                                                hidden: (n.role == "teacher" || n.role == "tutor") && !getVideoSettings() ? true : !f,//修改过的代码：屏蔽教师视频。
                                                 "is-me": r,
                                                 loading: "none" === o,
                                                 "show-in-content": l
