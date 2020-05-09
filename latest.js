@@ -9663,7 +9663,7 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                         }, {
                             key: "handleSourceDelete",
                             value: function (e, a) {
-                                if (confirm("你确定删除吗？")) {
+                                if (confirm("在 Token 不正确的情况下，您将无法成功删除文件。\n您确定要继续吗？")) {//修改过的代码：删除提示。
                                     var r = this.props
                                         , n = r.sendRoute
                                         , t = r.deleteFile;
