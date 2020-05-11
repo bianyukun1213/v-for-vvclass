@@ -164,7 +164,7 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
             });
             if (ppts.length != 0) {
                 pptsText = pptsText.substring(0, pptsText.length - 1);
-                var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。（浏览器拦截的话可在地址栏右侧进行设置）\n请输入您要查看的文档的 Id：\n" + pptsText);
+                var input = prompt("在查看之前，您需要注意两件事：\n一（十分重要！）、按 Del(ete) 键关闭内容控制权限的授予，否则您手动切换文档的操作会同步给所有人。\n二、如果弹出窗口被浏览器或广告拦截插件拦截，请修改设置以允许弹出窗口。\n请输入您要查看的文档的 Id：\n" + pptsText);
                 var reg = new RegExp("^[0-9]*$");
                 if (input == null)
                     return;
