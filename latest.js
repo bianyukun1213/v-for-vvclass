@@ -10460,7 +10460,7 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                                         }
                                     }) : s.default.createElement("span", {
                                         className: "display-name"
-                                    }, (n.role == "teacher" || n.role == "tutor") && !getVideoSettings() ? n.displayName + "（视频已屏蔽）" : n.displayName))), s.default.createElement("video", {//修改过的代码：显示教师视频屏蔽状态。
+                                    }, (n.role == "teacher" || n.role == "tutor") && !getVideoSettings() ? n.displayName + "（视频已关闭）" : n.displayName))), s.default.createElement("video", {//修改过的代码：显示教师视频屏蔽状态。
                                         ref: "video",
                                         className: (0,
                                             c.default)({
