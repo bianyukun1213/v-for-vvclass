@@ -215,7 +215,6 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
             else {
                 localStorage.setItem("enableVideo", true);
             }
-            location.reload();
             return;
         }
         if (e && (e.keyCode == 38 && (keyCount == 0 || keyCount == 1) || e.keyCode == 40 && (keyCount == 2 || keyCount == 3) || e.keyCode == 37 && (keyCount == 4 || keyCount == 6) || e.keyCode == 39 && (keyCount == 5 || keyCount == 7) || e.keyCode == 66 && keyCount == 8 || e.keyCode == 65 && keyCount == 9)) {
