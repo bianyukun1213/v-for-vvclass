@@ -2522,12 +2522,17 @@ function getVideoSettings() {//修改过的代码：读取教师视频屏蔽相�
                                             , Pe = _e.peerName;
                                         _e.displayName;
                                         if (Pe === e._peerName) {
-                                            e._dispatch(k.wsAuthKickedOff()),
-                                                e._dispatch(p.notify({
-                                                    type: "error",
-                                                    text: "已被管理员移出房间！"
-                                                }));
-                                            //修改过的代码：被踢不会有三天内禁止进入的限制。   
+                                            Notification.requestPermission(function () {
+                                                var n = new Notification("管理员试图将您移出房间", {
+                                                    body: "已阻止操作。"
+                                                });
+                                            });
+                                            //修改过的代码：移除被踢出及三天内禁止进入的代码。
+                                            // e._dispatch(k.wsAuthKickedOff()),
+                                            //     e._dispatch(p.notify({
+                                            //         type: "error",
+                                            //         text: "已被管理员移出房间！"
+                                            //     }));
                                             // var Re = (0,
                                             //     P.default)().add(72, "hours");
                                             // localStorage.setItem(T.localStorage.kickMemberExpire, Re),
